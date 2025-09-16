@@ -118,6 +118,12 @@ awk 'NR==1' file.txt                    # first row
 awk 'NR>=2 && NR<=5' file.txt           # rows 2 to 5
 awk -F',' '{print $2}' file.csv         # second column (comma-separated)
 awk '{print $1, $3}' file.txt           # multiple columns
+awk '$3 > 100 {print $1, $3}' file.txt	# filter rows by condition
+awk '{print $1 + $2}' file.txt		# prints sum of first and second column
+
+#####Aggregate_(sum, avg, etc.)_using_AWK#####
+awk '{sum += $2} END {print sum}' file.txt	# sum of second column
+awk '{sum += $2} END {print sum/NR}' file.txt	# average of second column
 
 grep -i "pattern" file.txt              # case-insensitive
 grep -v "pattern" file.txt              # lines NOT matching
