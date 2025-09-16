@@ -132,6 +132,12 @@ sed 's/old/new/' file.txt               # replace first occurrence per line
 sed 's/old/new/g' file.txt              # replace ALL occurrences per line
 sed -i 's/old/new/g' file.txt           # replace in-place
 
+echo "hello world" | tr 'a-z' 'A-Z'	# prints HELLO WORLD (convert lowercase → uppercase and vice versa)
+echo "hello 123" | tr -d '0-9'		# prints hello (delete specific characters)
+echo "hello world" | tr ' ' '_'		# prints hello_world (replace a set of characters)
+echo "hellooo     world" | tr -s ' o'	# prints helo world (squeeze (merge) repeated characters)
+cat file.txt | tr -d '\n'		# remove newlines → make one line
+
 wc -l file.txt                          # line count
 wc -w file.txt                          # word count
 wc -c file.txt                          # character count
