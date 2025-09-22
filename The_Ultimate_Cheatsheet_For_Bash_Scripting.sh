@@ -10,7 +10,7 @@ echo "${variable}"			# some string
 echo "${variable/some_str/new_str}"	# string substitution
 echo "${variable:start:end}"		# string slicing
 echo "${#variable}"			# string length
-echo "${other_variable}"		# expands other variable
+echo "${!other_variable}"		# expands other variable
 echo "${foo:-"default_value"}"		# set default value for a variable
 
 # Array
