@@ -41,6 +41,10 @@ echo "Today is $date"
 #####numerical_comparison#####
 if (( a > 5 )); then echo "yes"; fi
 
+#Note:- For advanced expressions and floating point calculations use the bc command
+echo "5 + 3" | bc			# prints 8
+echo "5 + 50*3/20 + (19*2)/7" | bc -l	# prints 17.42857142857142857142
+
 #####string_comparison#####
 if [[ "$str" == "hello" ]]; then
 	echo "world"
