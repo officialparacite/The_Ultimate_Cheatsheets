@@ -5,6 +5,13 @@ printf "Hello %s\n" "world"		# using prints with format specifiers
 readonly pi=3.14			# declaring a constant variable
 unset name				# removing the variable
 
+# Arithmetic
+echo $(( 3 + 5 ))			# prints 8
+
+# Advanced Arithmetic
+echo "5 + 3" | bc			# prints 8
+echo "5 + 50*3/20 + (19*2)/7" | bc -l	# prints 17.42857142857142857142
+
 # Parameter Expansion
 echo "${variable}"			# some string
 echo "${variable/some_str/new_str}"	# string substitution
@@ -40,10 +47,6 @@ echo "Today is $date"
 
 #####numerical_comparison#####
 if (( a > 5 )); then echo "yes"; fi
-
-#Note:- For advanced expressions and floating point calculations use the bc command
-echo "5 + 3" | bc			# prints 8
-echo "5 + 50*3/20 + (19*2)/7" | bc -l	# prints 17.42857142857142857142
 
 #####string_comparison#####
 if [[ "$str" == "hello" ]]; then
