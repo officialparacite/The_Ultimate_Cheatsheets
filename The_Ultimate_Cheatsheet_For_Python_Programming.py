@@ -155,6 +155,40 @@ check_three = 3 in a                # True
 check_five = 5 not in a             # True
 
 
+#####Unpacking#####
+
+# Basic unpacking
+a, b = [1, 2]                           # a=1, b=2
+x, y, z = (10, 20, 30)                  # works with tuples too
+
+# Extended unpacking
+first, *middle, last = [1, 2, 3, 4, 5]  # first=1, middle=[2,3,4], last=5
+
+*head, tail = [10, 20, 30]              # head=[10,20], tail=30
+
+# Ignore values with _
+a, _, b = [1, 99, 2]                    # a=1, b=2 (ignore 99)
+
+# Nested unpacking
+(x1, x2), (y1, y2) = [(1, 2), (3, 4)]   # x1=1, x2=2, y1=3, y2=4
+
+# Unpacking with function arguments
+def add(x, y, z): 
+    return x + y + z
+
+nums = [1, 2, 3]
+print(add(*nums))                       # 6
+
+# Dictionary unpacking
+d = {"x": 1, "y": 2}
+print(add(z=3, **d))                    # 6
+
+# Merge dictionaries
+d1 = {"a": 1}
+d2 = {"b": 2}
+merged = {**d1, **d2}                   # {'a': 1, 'b': 2}
+
+
 #####Conditionals#####
 
 # If/Elif/Else
