@@ -119,7 +119,7 @@ my_tuple[-1]                        # 3
 my_tuple[0:2]                       # (1, 2)
 
 # Immutability
-# t[0] = 5   # ❌ Error, tuples cannot be modified
+# t[0] = 5                          # ❌ Error, tuples cannot be modified
 
 # Useful functions
 len(my_tuple)                       # 3
