@@ -37,6 +37,7 @@ $1					# first argument
 $2					# second argument
 $@					# contains all arguments passed when executing the script
 $#					# number of arguments
+$$					# shows the pid of the script
 
 # Command Substitution
 date=$(date)
