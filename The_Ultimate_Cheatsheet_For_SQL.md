@@ -7,6 +7,12 @@
 sqlite3 test.db			# open (or create) database
 sqlite3 :memory:		# in-memory database
 ```
+## Starting SQLite in Neovim using vim-dadbod plugin
+
+```sh
+:DBUI					# starts the dadbod UI
+:sqlite:/<file_path>	# add database to the list 
+```
 
 ## Meta / Dot Commands (sqlite3 shell only)
 
