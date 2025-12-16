@@ -2,5 +2,5 @@
 
 - Bash Scripting
 - Python
-- SQL (work in progress)
+- SQL (sqlite)
 - Playwright (work in progress)
