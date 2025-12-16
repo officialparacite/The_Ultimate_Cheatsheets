@@ -1,140 +1,386 @@
-# Basic Queries
 
-- SELECT * FROM users;                                      [//]: <> (select all columns)
-- SELECT name, age FROM users;                              [//]: <> (select specific columns)
-- SELECT DISTINCT city FROM users;                          [//]: <> (unique values only)
-- SELECT COUNT(*) FROM users;                               [//]: <> (count rows)
+---
 
+## Starting SQLite
 
-# Filtering
+```sh
+sqlite3 test.db			# open (or create) database
+sqlite3 :memory:		# in-memory database
+```
 
-- SELECT * FROM users                                       [//]: <> (filters based on condition)
-  WHERE age > 18 AND city = 'London';
+## Meta / Dot Commands (sqlite3 shell only)
 
-- SELECT * FROM users                                       [//]: <> (starts with A)
-  WHERE name LIKE 'A%';
+```sql
+.help				-- show help
+.tables				-- list tables
+.schema				-- show schema of all tables
+.schema users			-- show schema of specific table
+.databases			-- list attached databases
+.headers on			-- show column headers
+.mode column			-- pretty column output
+.mode csv			-- CSV output
+.output file.csv		-- redirect output to file
+.quit				-- exit sqlite3
+```
 
-- SELECT * FROM users                                       [//]: <> (ends with son)
-  WHERE name LIKE '%son';
+## Creating Tables
 
-- SELECT * FROM users                                       [//]: <> (contains ann)
-  WHERE name LIKE '%ann%';
-
-- SELECT * FROM users                                       [//]: <> (inclusive range)
-  WHERE age BETWEEN 18 AND 30;
-
-- SELECT * FROM users                                       [//]: <> (multiple matches)
-  WHERE city IN ('Paris', 'Tokyo', 'NY');
-
-- SELECT * FROM users                                       [//]: <> (NULL check)
-  WHERE city IS NULL;
-
-
-# Sorting & Limiting
-
-- SELECT * FROM users ORDER BY age;                         [//]: <> (ORDER BY defaults to ASC)
-
-- SELECT * FROM users ORDER BY age DESC;                    [//]: <> (ORDER BY DESC has to be explicitly mentioned)
-
-- SELECT * FROM users ORDER BY age ASC LIMIT 5;             [//]: <> (Limits the result to 5 rows)
-
-
-# Aliases
-
-- SELECT name AS username, age AS years FROM users;         [//]: <> (sets aliases for columns and tables using the AS clause)
-
-
-# Aggregation
-
-- SELECT COUNT(*) AS total, AVG(age), MAX(age), SUM(age)    [//]: <> (performs aggregation on a selected column)
-FROM users;
-
-
-# GROUP BY
-
-SELECT city, COUNT(*) AS total_users                        [//]: <> (group by non aggregated column)
-FROM users
-GROUP BY city;
-
-SELECT city, AVG(age)                                       [//]: <> (HAVING filters after grouping)
-FROM users
-GROUP BY city
-HAVING AVG(age) > 30;
-
-
-# Joins 
-
-SELECT u.name, o.id                                         [//]: <> (INNER JOIN: Joins only matching rows)
-FROM users u
-INNER JOIN orders o ON u.id = o.user_id;
-
-SELECT u.name, o.id                                         [//]: <> (LEFT JOIN: Joins matching rows from left)
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id;
-
-SELECT u.name, o.id                                         [//]: <> (RIGHT JOIN: Joins matching rows from right)
-FROM users u
-RIGHT JOIN orders o ON u.id = o.user_id;
-
-SELECT u.name, o.id                                         [//]: <> (FULL OUTER JOIN: Joins everything from both sides)
-FROM users u
-FULL OUTER JOIN orders o ON u.id = o.user_id;
-
-
-# Sub Queries
-
-SELECT name                                                 [//]: <> (nested query is executed first before the outer query)
-FROM users
-WHERE id IN (SELECT user_id FROM orders WHERE total > 100);
-
-SELECT e.name, d.dept_name                                  [//]: <> (Subqueries is super useful when using Joins)
-FROM employees e
-INNER JOIN departments d ON e.department_id = d.id
-INNER JOIN (
-    SELECT department_id
-    FROM employees
-    GROUP BY department_id
-    HAVING COUNT(*) > 1
-) big_depts ON e.department_id = big_depts.department_id;
-
-
-# Creating a Table
-
-CREATE TABLE people (                                       [//]: <> (Creating a table with column names followed by type of column data)
-  id INTEGER, 
-  tag TEXT, 
-  name text, 
-  age INTEGER,
-  balance INTEGER,
-  is_admin BOOLEAN
-  );
-
-
-# Renaming a Table or Column
-
-ALTER TABLE employees                                       [//]: <> (Renaming a table to another name)
-RENAME TO contractors;
-
-ALTER TABLE contractors                                     [//]: <> (Renaming a column name inside a table)
-RENAME COLUMN salary TO invoice;
-
-
-# Add or Drop a column
-
-ALTER TABLE contractors                                     [//]: <> (Add a column to an existing table)
-ADD COLUMN job_title TEXT;
-
-ALTER TABLE contractors                                     [//]: <> (Dropping a column in an existing table)
-DROP COLUMN is_manager;
-
-
-# Constraints
-
-CREATE TABLE employees(
-    id INTEGER PRIMARY KEY,                                 [//]: <> (The PRIMARY KEY constraint uniquely identifies each row in the table)
-    name TEXT UNIQUE,                                       [//]: <> (The UNIQUE constraint ensures that no two rows can have the same value in the 'name' column)
-    title TEXT NOT NULL                                     [//]: <> (The NOT NULL constraint ensures that the 'title' column cannot have NULL values)
+```sql
+CREATE TABLE users (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT NOT NULL,
+	age INTEGER,
+	email TEXT UNIQUE
 );
+```
 
+## Data Types (SQLite is dynamically typed)
 
+```text
+INTEGER
+REAL
+TEXT
+BLOB
+NULL
+```
 
+## Insert Data
+
+```sql
+INSERT INTO users (name, age, email)
+VALUES ('Alice', 25, 'alice@mail.com');
+
+INSERT INTO users VALUES (NULL, 'Bob', 30, 'bob@mail.com');
+```
+
+## Select Queries
+
+```sql
+SELECT * FROM users;
+SELECT name, age FROM users;
+SELECT DISTINCT age FROM users;
+```
+
+## WHERE Conditions
+
+```sql
+SELECT * FROM users WHERE age > 25;
+SELECT * FROM users WHERE name = 'Alice';
+SELECT * FROM users WHERE age BETWEEN 20 AND 30;
+SELECT * FROM users WHERE email IS NULL;
+```
+
+## Logical Operators
+
+```sql
+SELECT * FROM users WHERE age > 20 AND age < 40;
+SELECT * FROM users WHERE name = 'Alice' OR name = 'Bob';
+SELECT * FROM users WHERE NOT age = 30;
+```
+
+## LIKE / Pattern Matching
+
+```sql
+SELECT * FROM users WHERE name LIKE 'A%';	-- starts with A
+SELECT * FROM users WHERE email LIKE '%@mail.com';
+SELECT * FROM users WHERE name LIKE '_l%';	-- single char wildcard
+```
+
+## Ordering & Limiting
+
+```sql
+SELECT * FROM users ORDER BY age ASC;
+SELECT * FROM users ORDER BY age DESC;
+SELECT * FROM users LIMIT 5;
+SELECT * FROM users LIMIT 5 OFFSET 10;
+```
+
+## Update Data
+
+```sql
+UPDATE users SET age = 26 WHERE name = 'Alice';
+UPDATE users SET email = NULL;
+```
+
+## Delete Data
+
+```sql
+DELETE FROM users WHERE name = 'Bob';
+DELETE FROM users;		-- delete all rows
+```
+
+## Aggregate Functions
+
+```sql
+SELECT COUNT(*) FROM users;
+SELECT AVG(age) FROM users;
+SELECT MIN(age), MAX(age) FROM users;
+SELECT SUM(age) FROM users;
+```
+
+## GROUP BY / HAVING
+
+```sql
+SELECT age, COUNT(*)
+FROM users
+GROUP BY age;
+
+SELECT age, COUNT(*)
+FROM users
+GROUP BY age
+HAVING COUNT(*) > 1;
+```
+
+## Joins
+
+```sql
+SELECT u.name, o.amount
+FROM users u
+JOIN orders o ON u.id = o.user_id;
+
+SELECT *
+FROM users
+LEFT JOIN orders ON users.id = orders.user_id;
+```
+
+## Indexes
+
+```sql
+CREATE INDEX idx_users_age ON users(age);
+DROP INDEX idx_users_age;
+```
+
+## Constraints
+
+```sql
+PRIMARY KEY
+UNIQUE
+NOT NULL
+DEFAULT 0
+CHECK(age >= 0)
+```
+
+## Alter Table (limited support)
+
+```sql
+ALTER TABLE users ADD COLUMN city TEXT;
+```
+
+## Transactions
+
+```sql
+BEGIN;
+INSERT INTO users VALUES (NULL, 'Eve', 22, NULL);
+COMMIT;
+
+ROLLBACK;
+```
+
+## Foreign Keys
+
+```sql
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE orders (
+	id INTEGER PRIMARY KEY,
+	user_id INTEGER,
+	amount REAL,
+	FOREIGN KEY(user_id) REFERENCES users(id)
+);
+```
+
+## Import / Export
+
+```sh
+sqlite3 db.sqlite < dump.sql
+```
+
+```sql
+.mode csv
+.import data.csv users
+```
+
+```sql
+.headers on
+.mode csv
+.output out.csv
+SELECT * FROM users;
+.output stdout
+```
+
+## Backup / Dump
+
+```sh
+sqlite3 db.sqlite .dump > dump.sql
+```
+
+## Useful PRAGMAs
+
+```sql
+PRAGMA table_info(users);	-- column info
+PRAGMA database_list;
+PRAGMA journal_mode;
+PRAGMA integrity_check;
+```
+
+## Exit Codes (CLI)
+
+```sh
+sqlite3 db.sqlite "SELECT 1;" || echo "failed"
+```
+
+---
+
+## Constraints (Detailed)
+
+### Column-level Constraints
+
+```sql
+id INTEGER PRIMARY KEY
+name TEXT NOT NULL
+email TEXT UNIQUE
+age INTEGER DEFAULT 18
+score INTEGER CHECK(score >= 0)
+```
+
+### Table-level Constraints
+
+```sql
+CREATE TABLE users (
+	id INTEGER,
+	email TEXT,
+	age INTEGER,
+	PRIMARY KEY (id),
+	UNIQUE (email),
+	CHECK (age >= 0)
+);
+```
+
+### Foreign Key Constraints
+
+```sql
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE orders (
+	id INTEGER PRIMARY KEY,
+	user_id INTEGER,
+	amount REAL,
+	FOREIGN KEY (user_id)
+		REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+```
+
+### Constraint Actions
+
+```text
+ON DELETE CASCADE
+ON DELETE SET NULL
+ON DELETE RESTRICT
+ON UPDATE CASCADE
+```
+
+---
+
+## Subqueries
+
+### Subquery in WHERE
+
+```sql
+SELECT name
+FROM users
+WHERE id IN (
+	SELECT user_id FROM orders
+);
+```
+
+### Subquery with Comparison
+
+```sql
+SELECT name
+FROM users
+WHERE age > (
+	SELECT AVG(age) FROM users
+);
+```
+
+### Subquery with EXISTS
+
+```sql
+SELECT name
+FROM users u
+WHERE EXISTS (
+	SELECT 1
+	FROM orders o
+	WHERE o.user_id = u.id
+);
+```
+
+### Subquery in SELECT
+
+```sql
+SELECT
+	name,
+	(SELECT COUNT(*) FROM orders WHERE user_id = users.id) AS order_count
+FROM users;
+```
+
+### Subquery in FROM (Derived Table)
+
+```sql
+SELECT avg_age
+FROM (
+	SELECT AVG(age) AS avg_age FROM users
+);
+```
+
+---
+
+## Correlated Subqueries
+
+(Subquery depends on outer query row)
+
+```sql
+SELECT name
+FROM users u
+WHERE age > (
+	SELECT AVG(age)
+	FROM users
+	WHERE city = u.city
+);
+```
+
+---
+
+## Common Subquery Operators
+
+```sql
+IN
+NOT IN
+EXISTS
+NOT EXISTS
+ANY
+ALL
+```
+
+Example:
+
+```sql
+SELECT name
+FROM users
+WHERE age >= ALL (
+	SELECT age FROM users WHERE city = 'Delhi'
+);
+```
+
+---
+
+## Constraint Introspection
+
+```sql
+PRAGMA table_info(users);	-- columns + constraints
+PRAGMA foreign_key_list(orders);
+```
+
+---
