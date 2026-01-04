@@ -4,3 +4,4 @@
 - Python
 - SQL (sqlite)
 - Playwright (work in progress)
+- Web Search Essentials
