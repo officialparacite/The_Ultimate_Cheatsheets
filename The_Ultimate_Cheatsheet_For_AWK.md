@@ -240,11 +240,9 @@ red car         Has red
 
 ---
 
-# Printing & Output
+## Printing & Output
 
 ---
-
-## Printing & Output
 
 ### Sample Data
 
