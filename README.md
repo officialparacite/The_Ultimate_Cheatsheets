@@ -1,6 +1,6 @@
 # The_Ultimate_Cheatsheets
 
-- AWK Scripting (work in progress)
+- AWK Scripting
 - Bash Scripting
 - Python
 - SQL (sqlite)

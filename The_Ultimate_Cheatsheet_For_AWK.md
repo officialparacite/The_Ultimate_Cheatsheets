@@ -22,6 +22,11 @@
 | - | [Operators](#operators) | [QR](#quick-reference-operators) |
 | - | [Regular Expressions](#regular-expressions) | [QR](#regex-quick-reference) |
 | - | [Arrays](#arrays) | [QR](#arrays-quick-reference) |
+| - | [Control Flow](#control-flow) | [QR](#control-flow-quick-reference) |
+| - | [Built-in Functions](#built-in-functions) | [QR](#built-in-functions-quick-reference) |
+| - | [User-Defined Functions](#user-defined-functions) | [QR](#user-defined-functions-quick-reference) |
+| - | [Output Redirection](#output-redirection) | [QR](#output-redirection-quick-reference) |
+
 
 
 ---
@@ -2176,6 +2181,2048 @@ END {
 ---
 
 [↑ Back to Arrays Navigation](#arrays-quick-navigation)
+
+---
+
+## Control Flow
+
+### Control Flow Quick Navigation
+
+| # | Section | Description |
+|---|---------|-------------|
+| 1 | [If Statement](#if-statement) | Basic conditional |
+| 2 | [If-Else Statement](#if-else-statement) | Two-way conditional |
+| 3 | [If-Else-If Ladder](#if-else-if-ladder) | Multiple conditions |
+| 4 | [Ternary Operator](#ternary-operator) | Inline conditional |
+| 5 | [While Loop](#while-loop) | Condition-based loop |
+| 6 | [Do-While Loop](#do-while-loop) | Loop at least once |
+| 7 | [For Loop](#for-loop) | Counter-based loop |
+| 8 | [For-In Loop](#for-in-loop) | Array iteration |
+| 9 | [Loop Control](#loop-control) | `break`, `continue`, `next`, `exit` |
+
+---
+
+### If Statement
+
+```awk
+# Syntax
+if (condition)
+    action
+
+# Multiple actions
+if (condition) {
+    action-1
+    action-2
+}
+```
+
+```awk
+# Example: Check if even
+awk 'BEGIN { 
+    num = 10
+    if (num % 2 == 0) 
+        printf "%d is even number.\n", num 
+}'
+
+# Output: 10 is even number.
+```
+
+```awk
+# Example: In main block
+{ 
+    if ($3 > 100) 
+        print "Large:", $0 
+}
+```
+
+---
+
+### If-Else Statement
+
+```awk
+# Syntax
+if (condition)
+    action-1
+else
+    action-2
+
+# Multiple actions
+if (condition) {
+    action-1
+    action-2
+} else {
+    action-3
+    action-4
+}
+```
+
+```awk
+# Example: Check even/odd
+awk 'BEGIN {
+    num = 11
+    if (num % 2 == 0) 
+        printf "%d is even number.\n", num
+    else 
+        printf "%d is odd number.\n", num
+}'
+
+# Output: 11 is odd number.
+```
+
+```awk
+# Example: In main block
+{
+    if ($3 > 50)
+        print "Pass:", $1
+    else
+        print "Fail:", $1
+}
+```
+
+---
+
+### If-Else-If Ladder
+
+```awk
+# Syntax
+if (condition-1)
+    action-1
+else if (condition-2)
+    action-2
+else if (condition-3)
+    action-3
+else
+    action-default
+```
+
+```awk
+# Example: Multiple conditions
+awk 'BEGIN {
+    a = 30
+    
+    if (a == 10)
+        print "a = 10"
+    else if (a == 20)
+        print "a = 20"
+    else if (a == 30)
+        print "a = 30"
+    else
+        print "a is something else"
+}'
+
+# Output: a = 30
+```
+
+```awk
+# Example: Grade assignment
+{
+    score = $2
+    if (score >= 90)
+        grade = "A"
+    else if (score >= 80)
+        grade = "B"
+    else if (score >= 70)
+        grade = "C"
+    else if (score >= 60)
+        grade = "D"
+    else
+        grade = "F"
+    
+    print $1, grade
+}
+```
+
+---
+
+### Ternary Operator
+
+```awk
+# Syntax
+variable = (condition) ? value-if-true : value-if-false
+```
+
+```awk
+# Example: Inline conditional
+awk 'BEGIN {
+    num = 10
+    result = (num % 2 == 0) ? "even" : "odd"
+    print num, "is", result
+}'
+
+# Output: 10 is even
+```
+
+```awk
+# Example: In print
+{ print $1, ($2 > 50 ? "Pass" : "Fail") }
+```
+
+```awk
+# Example: Nested ternary (use sparingly)
+{ 
+    grade = ($2 >= 90) ? "A" : ($2 >= 80) ? "B" : ($2 >= 70) ? "C" : "F"
+    print $1, grade
+}
+```
+
+---
+
+### While Loop
+
+```awk
+# Syntax
+while (condition) {
+    action
+}
+```
+
+```awk
+# Example: Print 1 to 5
+awk 'BEGIN {
+    i = 1
+    while (i <= 5) {
+        print i
+        i++
+    }
+}'
+
+# Output:
+# 1
+# 2
+# 3
+# 4
+# 5
+```
+
+```awk
+# Example: Sum of fields
+{
+    i = 1
+    sum = 0
+    while (i <= NF) {
+        sum += $i
+        i++
+    }
+    print "Sum:", sum
+}
+```
+
+---
+
+### Do-While Loop
+
+```awk
+# Syntax
+do {
+    action
+} while (condition)
+
+# Loop executes at least once
+```
+
+```awk
+# Example: Print 1 to 5
+awk 'BEGIN {
+    i = 1
+    do {
+        print i
+        i++
+    } while (i <= 5)
+}'
+
+# Output:
+# 1
+# 2
+# 3
+# 4
+# 5
+```
+
+```awk
+# Example: Executes once even if condition false
+awk 'BEGIN {
+    i = 10
+    do {
+        print "i =", i
+        i++
+    } while (i < 5)
+}'
+
+# Output: i = 10
+```
+
+---
+
+### For Loop
+
+```awk
+# Syntax
+for (initialization; condition; increment) {
+    action
+}
+```
+
+```awk
+# Example: Print 1 to 5
+awk 'BEGIN {
+    for (i = 1; i <= 5; i++) {
+        print i
+    }
+}'
+
+# Output:
+# 1
+# 2
+# 3
+# 4
+# 5
+```
+
+```awk
+# Example: Iterate through fields
+{
+    for (i = 1; i <= NF; i++) {
+        print "Field", i, "=", $i
+    }
+}
+```
+
+```awk
+# Example: Reverse fields
+{
+    for (i = NF; i >= 1; i--) {
+        printf "%s ", $i
+    }
+    printf "\n"
+}
+```
+
+---
+
+### For-In Loop
+
+```awk
+# Syntax
+for (key in array) {
+    action using array[key]
+}
+
+# Note: Order is not guaranteed
+```
+
+```awk
+# Example: Iterate array
+awk 'BEGIN {
+    fruits["apple"] = "red"
+    fruits["banana"] = "yellow"
+    fruits["grape"] = "purple"
+    
+    for (fruit in fruits) {
+        print fruit, "is", fruits[fruit]
+    }
+}'
+
+# Output (order may vary):
+# apple is red
+# banana is yellow
+# grape is purple
+```
+
+```awk
+# Example: Word frequency
+{
+    for (i = 1; i <= NF; i++)
+        count[$i]++
+}
+END {
+    for (word in count)
+        print word, count[word]
+}
+```
+
+---
+
+### Loop Control
+
+#### break
+
+```awk
+# Exit the loop immediately
+
+awk 'BEGIN {
+    for (i = 1; i <= 10; i++) {
+        if (i == 5) break
+        print i
+    }
+    print "Done"
+}'
+
+# Output:
+# 1
+# 2
+# 3
+# 4
+# Done
+```
+
+#### continue
+
+```awk
+# Skip to next iteration
+
+awk 'BEGIN {
+    for (i = 1; i <= 5; i++) {
+        if (i == 3) continue
+        print i
+    }
+}'
+
+# Output:
+# 1
+# 2
+# 4
+# 5
+```
+
+#### next
+
+```awk
+# Skip to next input line (not just loop iteration)
+
+# Skip lines starting with #
+/^#/ { next }
+{ print }
+```
+
+```awk
+# Skip blank lines
+NF == 0 { next }
+{ print }
+```
+
+#### nextfile (gawk)
+
+```awk
+# Skip to next input file
+
+# Print only first line of each file
+FNR == 1 { print FILENAME, $0; nextfile }
+```
+
+#### exit
+
+```awk
+# Exit the program (runs END block first)
+
+# Stop after finding "error"
+/error/ { 
+    print "Found error at line", NR
+    exit 1
+}
+END { print "Done" }
+```
+
+```awk
+# Exit with status code
+BEGIN {
+    if (ARGC < 2) {
+        print "Usage: script.awk file"
+        exit 1
+    }
+}
+```
+
+---
+
+### Control Flow Quick Reference: 
+
+#### Conditionals
+
+```awk
+# If
+if (cond) action
+
+# If-else
+if (cond) action1 else action2
+
+# If-else-if
+if (cond1) action1
+else if (cond2) action2
+else action3
+
+# Ternary
+var = (cond) ? val1 : val2
+```
+
+#### Loops
+
+```awk
+# While
+while (cond) { action }
+
+# Do-while
+do { action } while (cond)
+
+# For
+for (i = 0; i < n; i++) { action }
+
+# For-in (arrays)
+for (key in arr) { action }
+```
+
+#### Control Statements
+
+| Statement | Description |
+|-----------|-------------|
+| `break` | Exit loop |
+| `continue` | Next iteration |
+| `next` | Next input line |
+| `nextfile` | Next input file (gawk) |
+| `exit` | Exit program |
+| `exit n` | Exit with status n |
+
+#### Common Patterns
+
+```awk
+# Skip header
+NR == 1 { next }
+
+# Skip blank lines
+/^$/ { next }
+NF == 0 { next }
+
+# Skip comments
+/^#/ { next }
+
+# Process only matching lines
+/pattern/ { action; next }
+{ default action }
+
+# Stop at pattern
+/stop/ { exit }
+
+# Process first n lines
+NR > 10 { exit }
+
+# Process range
+NR >= 5 && NR <= 10 { print }
+
+# Conditional field processing
+{
+    for (i = 1; i <= NF; i++) {
+        if ($i ~ /^[0-9]+$/)
+            sum += $i
+    }
+}
+```
+
+---
+
+[↑ Back to Control Flow Navigation](#control-flow-quick-navigation)
+
+---
+
+## Built-in Functions
+
+### Functions Quick Navigation
+
+| # | Section | Description |
+|---|---------|-------------|
+| 1 | [Arithmetic Functions](#arithmetic-functions) | Math operations |
+| 2 | [String Functions](#string-functions) | Text manipulation |
+| 3 | [Time Functions](#time-functions) | Date and time |
+| 4 | [Bit Manipulation Functions](#bit-manipulation-functions) | Bitwise operations (gawk) |
+| 5 | [I/O Functions](#io-functions) | Input/output operations |
+| 6 | [Miscellaneous Functions](#miscellaneous-functions) | Type, system, etc. |
+
+---
+
+### Arithmetic Functions
+
+| Function | Description |
+|----------|-------------|
+| `int(x)` | Truncate to integer |
+| `sqrt(x)` | Square root |
+| `exp(x)` | Exponential (e^x) |
+| `log(x)` | Natural logarithm |
+| `sin(x)` | Sine (radians) |
+| `cos(x)` | Cosine (radians) |
+| `atan2(y, x)` | Arctangent of y/x |
+| `rand()` | Random number 0 to 1 |
+| `srand([seed])` | Seed random generator |
+
+#### Examples
+
+```awk
+# int() - Truncate to integer
+awk 'BEGIN { print int(5.9) }'       # 5
+awk 'BEGIN { print int(-5.9) }'      # -5
+
+# sqrt() - Square root
+awk 'BEGIN { print sqrt(16) }'       # 4
+awk 'BEGIN { print sqrt(2) }'        # 1.41421
+
+# exp() and log() - Exponential and logarithm
+awk 'BEGIN { print exp(1) }'         # 2.71828 (e)
+awk 'BEGIN { print log(2.71828) }'   # 1
+
+# sin() and cos() - Trigonometry (radians)
+awk 'BEGIN { print sin(0) }'         # 0
+awk 'BEGIN { print cos(0) }'         # 1
+awk 'BEGIN { pi = 3.14159; print sin(pi/2) }'  # 1
+
+# atan2() - Arctangent
+awk 'BEGIN { print atan2(1, 1) }'    # 0.785398 (π/4)
+
+# rand() and srand() - Random numbers
+awk 'BEGIN { print rand() }'                    # 0.xxx (same each run)
+awk 'BEGIN { srand(); print rand() }'           # 0.xxx (different each run)
+awk 'BEGIN { srand(42); print rand() }'         # 0.xxx (reproducible)
+
+# Random integer between 1 and 10
+awk 'BEGIN { srand(); print int(rand() * 10) + 1 }'
+
+# Random integer in range [min, max]
+awk 'BEGIN { 
+    srand()
+    min = 5; max = 15
+    print int(rand() * (max - min + 1)) + min 
+}'
+```
+
+#### Derived Math Operations
+
+```awk
+# Absolute value
+function abs(x) { return (x < 0) ? -x : x }
+
+# Power (x^y)
+awk 'BEGIN { print 2^10 }'           # 1024
+
+# Modulo
+awk 'BEGIN { print 17 % 5 }'         # 2
+
+# Round to nearest integer
+function round(x) { return int(x + 0.5) }
+
+# Ceiling
+function ceil(x) { return (x == int(x)) ? x : int(x) + 1 }
+
+# Floor
+function floor(x) { return int(x) }
+
+# Min/Max
+function min(a, b) { return (a < b) ? a : b }
+function max(a, b) { return (a > b) ? a : b }
+```
+
+---
+
+### String Functions
+
+| Function | Description |
+|----------|-------------|
+| `length(s)` | Length of string |
+| `substr(s, start, [len])` | Extract substring |
+| `index(s, target)` | Find position of target |
+| `split(s, arr, [sep])` | Split into array |
+| `sub(regex, repl, [target])` | Replace first match |
+| `gsub(regex, repl, [target])` | Replace all matches |
+| `match(s, regex)` | Find regex match |
+| `sprintf(fmt, ...)` | Format string |
+| `tolower(s)` | Convert to lowercase |
+| `toupper(s)` | Convert to uppercase |
+| `gensub(regex, repl, how, [target])` | Advanced replace (gawk) |
+| `patsplit(s, arr, regex)` | Split by pattern (gawk) |
+| `strtonum(s)` | String to number (gawk) |
+
+#### length()
+
+```awk
+# Length of string
+awk 'BEGIN { print length("hello") }'        # 5
+
+# Length of field
+awk '{ print length($1) }' file
+
+# Length of line
+awk '{ print length($0) }' file
+awk '{ print length() }' file                # $0 is default
+
+# Filter by length
+awk 'length($0) > 80' file                   # lines > 80 chars
+```
+
+#### substr()
+
+```awk
+# substr(string, start, [length])
+# Note: AWK strings are 1-indexed
+
+awk 'BEGIN { print substr("hello world", 1, 5) }'    # hello
+awk 'BEGIN { print substr("hello world", 7) }'       # world (to end)
+awk 'BEGIN { print substr("hello world", 7, 3) }'    # wor
+
+# Extract parts of field
+awk '{ print substr($1, 1, 3) }' file        # first 3 chars of field 1
+
+# Last n characters
+awk 'BEGIN { 
+    s = "hello"
+    n = 2
+    print substr(s, length(s) - n + 1) 
+}'                                            # lo
+```
+
+#### index()
+
+```awk
+# index(string, target) - returns position (0 if not found)
+
+awk 'BEGIN { print index("hello world", "wor") }'    # 7
+awk 'BEGIN { print index("hello world", "xyz") }'    # 0
+
+# Check if substring exists
+awk '{ if (index($0, "error") > 0) print }' file
+
+# Find and extract
+awk '{
+    pos = index($0, "=")
+    if (pos > 0) {
+        key = substr($0, 1, pos - 1)
+        val = substr($0, pos + 1)
+        print key, "->", val
+    }
+}' file
+```
+
+#### split()
+
+```awk
+# split(string, array, [separator])
+# Returns number of elements
+
+awk 'BEGIN {
+    n = split("a:b:c:d", arr, ":")
+    print "Count:", n              # 4
+    for (i = 1; i <= n; i++)
+        print arr[i]               # a, b, c, d
+}'
+
+# Split with regex separator
+awk 'BEGIN {
+    split("a1b2c3d", arr, /[0-9]/)
+    for (i in arr) print arr[i]    # a, b, c, d
+}'
+
+# Split field
+awk -F'|' '{
+    n = split($2, parts, ",")
+    for (i = 1; i <= n; i++)
+        print parts[i]
+}' file
+
+# Default separator is FS
+awk 'BEGIN { FS = ":" }
+{
+    n = split($0, arr)             # uses FS
+    print "Fields:", n
+}' /etc/passwd
+```
+
+#### sub() and gsub()
+
+```awk
+# sub(regex, replacement, [target])
+# Replace first match, modifies in place, returns 0 or 1
+
+awk 'BEGIN {
+    s = "hello world"
+    sub(/world/, "AWK", s)
+    print s                        # hello AWK
+}'
+
+# Default target is $0
+awk '{ sub(/error/, "ERROR"); print }' file
+
+# gsub() - replace ALL matches
+awk 'BEGIN {
+    s = "hello world world"
+    n = gsub(/world/, "AWK", s)
+    print s                        # hello AWK AWK
+    print "Replaced:", n           # 2
+}'
+
+# Remove all spaces
+awk '{ gsub(/ /, ""); print }' file
+
+# Replace in specific field
+awk '{ gsub(/old/, "new", $2); print }' file
+
+# & in replacement = matched text
+awk '{ gsub(/[0-9]+/, "[&]"); print }' file
+# Input:  abc123def456
+# Output: abc[123]def[456]
+```
+
+#### match()
+
+```awk
+# match(string, regex)
+# Returns position of match (0 if none)
+# Sets RSTART and RLENGTH
+
+awk 'BEGIN {
+    s = "hello123world"
+    if (match(s, /[0-9]+/)) {
+        print "Position:", RSTART   # 6
+        print "Length:", RLENGTH    # 3
+        print "Match:", substr(s, RSTART, RLENGTH)  # 123
+    }
+}'
+
+# Extract all numbers
+awk '{
+    while (match($0, /[0-9]+/)) {
+        print substr($0, RSTART, RLENGTH)
+        $0 = substr($0, RSTART + RLENGTH)
+    }
+}' file
+```
+
+#### sprintf()
+
+```awk
+# sprintf(format, values...) - returns formatted string
+
+awk 'BEGIN {
+    s = sprintf("%s is %d years old", "Alice", 30)
+    print s                        # Alice is 30 years old
+}'
+
+# Padding and alignment
+awk 'BEGIN {
+    print sprintf("%-10s %5d", "Alice", 30)   # Alice          30
+    print sprintf("%010d", 42)                 # 0000000042
+}'
+
+# Float formatting
+awk 'BEGIN {
+    print sprintf("%.2f", 3.14159)            # 3.14
+    print sprintf("%8.2f", 3.14159)           #     3.14
+}'
+```
+
+#### tolower() and toupper()
+
+```awk
+awk 'BEGIN { print tolower("HELLO World") }'  # hello world
+awk 'BEGIN { print toupper("hello World") }'  # HELLO WORLD
+
+# Case-insensitive comparison
+awk '{ if (tolower($1) == "error") print }' file
+
+# Capitalize first letter
+awk '{ 
+    first = toupper(substr($0, 1, 1))
+    rest = substr($0, 2)
+    print first rest 
+}' file
+```
+
+#### gensub() (gawk only)
+
+```awk
+# gensub(regex, replacement, how, [target])
+# Returns new string (doesn't modify original)
+# Supports backreferences \1 \2 etc.
+
+awk 'BEGIN {
+    s = "hello world"
+    
+    # Replace all
+    print gensub(/o/, "0", "g", s)        # hell0 w0rld
+    
+    # Replace first
+    print gensub(/o/, "0", 1, s)          # hell0 world
+    
+    # Replace second
+    print gensub(/o/, "0", 2, s)          # hello w0rld
+    
+    print s                                # hello world (unchanged)
+}'
+
+# Backreferences
+awk 'BEGIN {
+    s = "John Smith"
+    print gensub(/(.+) (.+)/, "\\2, \\1", "g", s)
+}'
+# Output: Smith, John
+
+# Reformat date
+awk 'BEGIN {
+    date = "2024-01-15"
+    print gensub(/([0-9]+)-([0-9]+)-([0-9]+)/, "\\2/\\3/\\1", "g", date)
+}'
+# Output: 01/15/2024
+```
+
+#### patsplit() (gawk only)
+
+```awk
+# patsplit(string, array, pattern, [seps])
+# Split by extracting pattern matches
+
+awk 'BEGIN {
+    s = "abc123def456ghi789"
+    n = patsplit(s, nums, /[0-9]+/)
+    for (i = 1; i <= n; i++)
+        print nums[i]              # 123, 456, 789
+}'
+
+# Extract all email addresses
+awk '{
+    n = patsplit($0, emails, /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/)
+    for (i = 1; i <= n; i++)
+        print emails[i]
+}' file
+```
+
+#### strtonum() (gawk only)
+
+```awk
+# Convert string to number (handles hex, octal)
+
+awk 'BEGIN {
+    print strtonum("42")           # 42
+    print strtonum("0x2A")         # 42 (hex)
+    print strtonum("052")          # 42 (octal)
+}'
+```
+
+---
+
+### Time Functions
+
+| Function | Description |
+|----------|-------------|
+| `systime()` | Current Unix timestamp |
+| `mktime(datespec)` | Convert date to timestamp |
+| `strftime(format, [timestamp])` | Format timestamp |
+
+#### systime()
+
+```awk
+# Returns current Unix timestamp (seconds since 1970-01-01)
+
+awk 'BEGIN { print systime() }'    # 1705312345 (example)
+```
+
+#### mktime()
+
+```awk
+# mktime("YYYY MM DD HH MM SS")
+# Returns Unix timestamp for given date
+
+awk 'BEGIN {
+    ts = mktime("2024 01 15 10 30 00")
+    print ts                       # 1705315800
+}'
+
+# Calculate days between dates
+awk 'BEGIN {
+    date1 = mktime("2024 01 01 00 00 00")
+    date2 = mktime("2024 12 31 00 00 00")
+    days = (date2 - date1) / 86400
+    print "Days:", days            # 365
+}'
+```
+
+#### strftime()
+
+```awk
+# strftime(format, [timestamp])
+# Default timestamp is current time
+
+awk 'BEGIN { print strftime("%Y-%m-%d %H:%M:%S") }'
+# Output: 2024-01-15 10:30:00
+
+awk 'BEGIN { print strftime("%A, %B %d, %Y") }'
+# Output: Monday, January 15, 2024
+
+# Format specific timestamp
+awk 'BEGIN {
+    ts = mktime("2024 01 15 10 30 00")
+    print strftime("%Y-%m-%d", ts)  # 2024-01-15
+}'
+```
+
+#### strftime Format Codes
+
+| Code | Description | Example |
+|------|-------------|---------|
+| `%Y` | Year (4 digit) | 2024 |
+| `%y` | Year (2 digit) | 24 |
+| `%m` | Month (01-12) | 01 |
+| `%d` | Day (01-31) | 15 |
+| `%H` | Hour (00-23) | 14 |
+| `%M` | Minute (00-59) | 30 |
+| `%S` | Second (00-59) | 45 |
+| `%A` | Weekday name | Monday |
+| `%a` | Weekday abbrev | Mon |
+| `%B` | Month name | January |
+| `%b` | Month abbrev | Jan |
+| `%j` | Day of year | 015 |
+| `%U` | Week number | 03 |
+| `%w` | Weekday (0-6) | 1 |
+| `%Z` | Timezone | EST |
+| `%%` | Literal % | % |
+
+---
+
+### Bit Manipulation Functions (gawk)
+
+| Function | Description |
+|----------|-------------|
+| `and(v1, v2)` | Bitwise AND |
+| `or(v1, v2)` | Bitwise OR |
+| `xor(v1, v2)` | Bitwise XOR |
+| `compl(val)` | Bitwise complement |
+| `lshift(val, n)` | Left shift by n bits |
+| `rshift(val, n)` | Right shift by n bits |
+
+#### Examples
+
+```awk
+awk 'BEGIN {
+    # and() - Bitwise AND
+    print and(12, 10)              # 8  (1100 & 1010 = 1000)
+    
+    # or() - Bitwise OR
+    print or(12, 10)               # 14 (1100 | 1010 = 1110)
+    
+    # xor() - Bitwise XOR
+    print xor(12, 10)              # 6  (1100 ^ 1010 = 0110)
+    
+    # compl() - Complement
+    print compl(0)                 # large number (all 1s)
+    
+    # lshift() - Left shift
+    print lshift(1, 4)             # 16 (1 << 4)
+    
+    # rshift() - Right shift
+    print rshift(16, 2)            # 4  (16 >> 2)
+}'
+```
+
+```awk
+# Check if bit is set
+function bit_set(val, bit) {
+    return and(val, lshift(1, bit)) != 0
+}
+
+# Set a bit
+function set_bit(val, bit) {
+    return or(val, lshift(1, bit))
+}
+
+# Clear a bit
+function clear_bit(val, bit) {
+    return and(val, compl(lshift(1, bit)))
+}
+
+# Toggle a bit
+function toggle_bit(val, bit) {
+    return xor(val, lshift(1, bit))
+}
+```
+
+---
+
+### I/O Functions
+
+| Function | Description |
+|----------|-------------|
+| `getline` | Read next line |
+| `getline var` | Read into variable |
+| `getline < file` | Read from file |
+| `cmd \| getline` | Read from command |
+| `close(file)` | Close file or pipe |
+| `fflush([file])` | Flush output buffer |
+| `system(cmd)` | Execute shell command |
+
+#### getline
+
+```awk
+# Read next line into $0, updates NF, NR
+{
+    if ((getline) > 0) {
+        print "Next line:", $0
+    }
+}
+
+# Read into variable (doesn't change $0, NF)
+{
+    if ((getline nextline) > 0) {
+        print "Current:", $0
+        print "Next:", nextline
+    }
+}
+
+# Return values:
+#  1 = success
+#  0 = end of file
+# -1 = error
+```
+
+#### getline from file
+
+```awk
+# Read from specific file
+BEGIN {
+    while ((getline line < "data.txt") > 0) {
+        print line
+    }
+    close("data.txt")
+}
+
+# Read entire file into array
+BEGIN {
+    n = 0
+    while ((getline lines[++n] < "data.txt") > 0);
+    close("data.txt")
+    
+    for (i = 1; i < n; i++)
+        print lines[i]
+}
+```
+
+#### getline from command
+
+```awk
+# Read from command output
+BEGIN {
+    while (("ls -la" | getline line) > 0) {
+        print line
+    }
+    close("ls -la")
+}
+
+# Get current date
+BEGIN {
+    "date" | getline current_date
+    close("date")
+    print "Today:", current_date
+}
+
+# Read single value
+BEGIN {
+    "whoami" | getline user
+    close("whoami")
+    print "User:", user
+}
+```
+
+#### Output redirection
+
+```awk
+# Write to file
+{ print $0 > "output.txt" }
+
+# Append to file
+{ print $0 >> "output.txt" }
+
+# Pipe to command
+{ print $0 | "sort" }
+{ print $0 | "mail -s 'Report' user@example.com" }
+
+# Close file/pipe (important for many files)
+{
+    outfile = "output_" $1 ".txt"
+    print $0 > outfile
+    close(outfile)
+}
+```
+
+#### close()
+
+```awk
+# Close file or pipe
+{
+    print $0 > "output.txt"
+}
+END {
+    close("output.txt")
+}
+
+# Required when:
+# - Re-reading a file
+# - Writing to many files (avoid too many open files)
+# - Ensuring pipe command completes
+```
+
+#### fflush()
+
+```awk
+# Flush output buffer
+{ 
+    print $0
+    fflush()           # flush stdout
+}
+
+# Flush specific file
+{
+    print $0 > "output.txt"
+    fflush("output.txt")
+}
+
+# Flush all output
+{ fflush("") }
+```
+
+#### system()
+
+```awk
+# Execute shell command, returns exit status
+
+BEGIN {
+    ret = system("ls -la")
+    print "Exit status:", ret
+}
+
+# Run command for each line
+{
+    cmd = "echo " $0 " | wc -c"
+    system(cmd)
+}
+
+# Conditional execution
+{
+    if (system("test -f " $1) == 0) {
+        print $1, "exists"
+    }
+}
+```
+
+---
+
+### Miscellaneous Functions
+
+| Function | Description |
+|----------|-------------|
+| `typeof(x)` | Return type of variable (gawk) |
+| `isarray(x)` | Check if array (gawk) |
+| `delete arr[key]` | Delete array element |
+| `delete arr` | Delete entire array (gawk) |
+
+#### typeof() (gawk)
+
+```awk
+awk 'BEGIN {
+    a = 42
+    b = "hello"
+    c[1] = "x"
+    
+    print typeof(a)        # number
+    print typeof(b)        # string
+    print typeof(c)        # array
+    print typeof(d)        # untyped (undefined)
+}'
+```
+
+#### isarray() (gawk)
+
+```awk
+awk 'BEGIN {
+    arr[1] = "a"
+    str = "hello"
+    
+    print isarray(arr)     # 1 (true)
+    print isarray(str)     # 0 (false)
+}'
+```
+
+---
+
+### Built-in Functions Quick Reference
+
+#### Arithmetic
+
+| Function | Returns |
+|----------|---------|
+| `int(x)` | Integer part |
+| `sqrt(x)` | Square root |
+| `exp(x)` | e^x |
+| `log(x)` | Natural log |
+| `sin(x)` `cos(x)` | Trig functions |
+| `atan2(y,x)` | Arctangent |
+| `rand()` | Random 0-1 |
+| `srand([n])` | Seed random |
+
+#### String
+
+| Function | Returns |
+|----------|---------|
+| `length(s)` | Length |
+| `substr(s,i,[n])` | Substring |
+| `index(s,t)` | Position of t |
+| `split(s,a,[sep])` | Element count |
+| `sub(r,s,[t])` | 0 or 1 |
+| `gsub(r,s,[t])` | Replace count |
+| `match(s,r)` | Position |
+| `sprintf(f,...)` | Formatted string |
+| `tolower(s)` | Lowercase |
+| `toupper(s)` | Uppercase |
+| `gensub(r,s,h,[t])` | New string (gawk) |
+
+#### Time (gawk)
+
+| Function | Returns |
+|----------|---------|
+| `systime()` | Unix timestamp |
+| `mktime(date)` | Timestamp |
+| `strftime(fmt,[ts])` | Formatted date |
+
+#### I/O
+
+| Function | Returns |
+|----------|---------|
+| `getline` | 1, 0, or -1 |
+| `close(f)` | 0 or -1 |
+| `system(cmd)` | Exit status |
+| `fflush([f])` | 0 or -1 |
+
+#### Common Patterns
+
+```awk
+# Random integer 1-10
+int(rand() * 10) + 1
+
+# Extract filename extension
+match(file, /\.[^.]+$/); ext = substr(file, RSTART+1)
+
+# Trim whitespace
+gsub(/^[ \t]+|[ \t]+$/, "", str)
+
+# Title case
+{ 
+    $0 = tolower($0)
+    $0 = toupper(substr($0,1,1)) substr($0,2)
+}
+
+# Parse key=value
+{
+    pos = index($0, "=")
+    key = substr($0, 1, pos-1)
+    val = substr($0, pos+1)
+}
+
+# Current datetime
+strftime("%Y-%m-%d %H:%M:%S")
+```
+
+---
+
+[↑ Back to Functions Navigation](#functions-quick-navigation)
+
+---
+
+## User-Defined Functions
+
+### Syntax
+
+```awk
+function function_name(argument1, argument2, ...) {
+    function body
+    return value
+}
+```
+
+### Rules
+
+- Function name must begin with a letter
+- Can contain letters, numbers, underscores
+- Cannot use AWK reserved words
+- Arguments are optional
+- Arguments are passed by value (scalars) or by reference (arrays)
+
+---
+
+### Basic Example
+
+```awk
+# Define function
+function greet(name) {
+    return "Hello, " name "!"
+}
+
+# Use function
+BEGIN {
+    print greet("World")    # Hello, World!
+}
+```
+
+---
+
+### Multiple Arguments
+
+```awk
+function find_min(num1, num2) {
+    if (num1 < num2)
+        return num1
+    return num2
+}
+
+function find_max(num1, num2) {
+    if (num1 > num2)
+        return num1
+    return num2
+}
+
+BEGIN {
+    print "Min:", find_min(10, 20)    # Min: 10
+    print "Max:", find_max(10, 20)    # Max: 20
+}
+```
+
+---
+
+### No Arguments
+
+```awk
+function print_separator() {
+    print "-------------------"
+}
+
+BEGIN {
+    print_separator()
+    print "Report"
+    print_separator()
+}
+```
+
+---
+
+### Local Variables
+
+```awk
+# Variables after arguments are local (convention: add extra spaces)
+function sum_array(arr, n,    i, sum) {
+    sum = 0
+    for (i = 1; i <= n; i++) {
+        sum += arr[i]
+    }
+    return sum
+}
+
+BEGIN {
+    a[1] = 10; a[2] = 20; a[3] = 30
+    print sum_array(a, 3)    # 60
+}
+```
+
+> [!NOTE]
+> AWK doesn't have true local variables. The convention is to declare them as extra parameters (often separated by extra spaces for clarity).
+
+---
+
+### Arrays as Arguments
+
+```awk
+# Arrays are passed by reference (modified in place)
+function double_values(arr, n,    i) {
+    for (i = 1; i <= n; i++) {
+        arr[i] *= 2
+    }
+}
+
+BEGIN {
+    a[1] = 5; a[2] = 10; a[3] = 15
+    double_values(a, 3)
+    print a[1], a[2], a[3]    # 10 20 30
+}
+```
+
+---
+
+### Recursive Functions
+
+```awk
+function factorial(n) {
+    if (n <= 1)
+        return 1
+    return n * factorial(n - 1)
+}
+
+BEGIN {
+    print factorial(5)    # 120
+}
+```
+
+```awk
+function fibonacci(n) {
+    if (n <= 1)
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+BEGIN {
+    for (i = 0; i < 10; i++)
+        printf "%d ", fibonacci(i)
+    print ""
+}
+# Output: 0 1 1 2 3 5 8 13 21 34
+```
+
+---
+
+### Practical Examples
+
+#### Trim Whitespace
+
+```awk
+function trim(s) {
+    gsub(/^[ \t]+|[ \t]+$/, "", s)
+    return s
+}
+
+{
+    print trim($0)
+}
+```
+
+#### Repeat String
+
+```awk
+function repeat(s, n,    result, i) {
+    result = ""
+    for (i = 1; i <= n; i++)
+        result = result s
+    return result
+}
+
+BEGIN {
+    print repeat("-", 20)    # --------------------
+    print repeat("ab", 5)    # ababababab
+}
+```
+
+#### Check if Numeric
+
+```awk
+function is_numeric(s) {
+    return s ~ /^-?[0-9]*\.?[0-9]+$/
+}
+
+{
+    if (is_numeric($1))
+        print $1, "is a number"
+    else
+        print $1, "is not a number"
+}
+```
+
+#### Join Array
+
+```awk
+function join(arr, n, sep,    result, i) {
+    result = arr[1]
+    for (i = 2; i <= n; i++)
+        result = result sep arr[i]
+    return result
+}
+
+BEGIN {
+    a[1] = "one"; a[2] = "two"; a[3] = "three"
+    print join(a, 3, ", ")    # one, two, three
+}
+```
+
+#### Reverse String
+
+```awk
+function reverse(s,    i, result) {
+    result = ""
+    for (i = length(s); i >= 1; i--)
+        result = result substr(s, i, 1)
+    return result
+}
+
+BEGIN {
+    print reverse("hello")    # olleh
+}
+```
+
+#### Title Case
+
+```awk
+function title_case(s,    words, n, i, result) {
+    n = split(tolower(s), words, " ")
+    for (i = 1; i <= n; i++) {
+        words[i] = toupper(substr(words[i], 1, 1)) substr(words[i], 2)
+    }
+    return join(words, n, " ")
+}
+```
+
+#### Absolute Value
+
+```awk
+function abs(x) {
+    return (x < 0) ? -x : x
+}
+```
+
+#### Round to Decimal Places
+
+```awk
+function round(x, decimals,    mult) {
+    mult = 10 ^ decimals
+    return int(x * mult + 0.5) / mult
+}
+
+BEGIN {
+    print round(3.14159, 2)    # 3.14
+}
+```
+
+---
+
+### User-Defined Functions Quick Reference
+
+```awk
+# Basic syntax
+function name(args) { body; return value }
+
+# With local variables (convention)
+function name(args,    local1, local2) { body }
+
+# No return value (procedure)
+function print_header() { print "====" }
+
+# Return value
+function add(a, b) { return a + b }
+
+# Array argument (passed by reference)
+function process(arr, n) { arr[1] = 0 }
+
+# Recursive
+function fact(n) { return n <= 1 ? 1 : n * fact(n-1) }
+
+# Call functions
+BEGIN { result = my_function(arg1, arg2) }
+{ my_function($1, $2) }
+END { print my_function(total) }
+```
+
+---
+
+[↑ Back to Index](#index)
+
+---
+
+## Output Redirection
+
+### Redirection Quick Navigation
+
+| # | Section | Description |
+|---|---------|-------------|
+| 1 | [Write to File](#write-to-file) | `>` operator |
+| 2 | [Append to File](#append-to-file) | `>>` operator |
+| 3 | [Pipe to Command](#pipe-to-command) | `\|` operator |
+| 4 | [Two-Way Communication](#two-way-communication) | `\|&` operator (gawk) |
+| 5 | [Closing Files and Pipes](#closing-files-and-pipes) | `close()` function |
+
+---
+
+### Write to File
+
+```awk
+# Syntax
+print DATA > "output-file"
+printf FORMAT, DATA > "output-file"
+```
+
+- Creates file if it doesn't exist
+- **Overwrites** file on first write
+- Subsequent writes append (within same AWK run)
+
+#### Examples
+
+```awk
+# Write to file
+awk 'BEGIN { print "Hello, World!" > "/tmp/message.txt" }'
+
+# Write fields to file
+awk '{ print $1, $2 > "output.txt" }' input.txt
+
+# Write to file based on condition
+awk '{ 
+    if ($3 > 100) 
+        print $0 > "large.txt"
+    else 
+        print $0 > "small.txt"
+}' data.txt
+
+# Write to dynamically named files
+awk '{ 
+    outfile = $1 ".txt"
+    print $0 > outfile
+}' data.txt
+```
+
+---
+
+### Append to File
+
+```awk
+# Syntax
+print DATA >> "output-file"
+printf FORMAT, DATA >> "output-file"
+```
+
+- Creates file if it doesn't exist
+- **Appends** to existing content
+
+#### Examples
+
+```awk
+# Append to file
+awk 'BEGIN { print "New line" >> "/tmp/message.txt" }'
+
+# Append log entries
+awk '{ 
+    print strftime("%Y-%m-%d %H:%M:%S"), $0 >> "log.txt" 
+}' events.txt
+
+# Preserve existing and add new
+awk 'BEGIN { 
+    print "--- Start ---" >> "report.txt"
+}
+{ 
+    print $0 >> "report.txt" 
+}
+END { 
+    print "--- End ---" >> "report.txt"
+}' data.txt
+```
+
+---
+
+### Pipe to Command
+
+```awk
+# Syntax
+print DATA | "command"
+printf FORMAT, DATA | "command"
+```
+
+- Sends output to another program
+- Command runs as shell process
+
+#### Examples
+
+```awk
+# Convert to uppercase
+awk 'BEGIN { print "hello, world!" | "tr [a-z] [A-Z]" }'
+# Output: HELLO, WORLD!
+
+# Sort output
+awk '{ print $2 | "sort" }' data.txt
+
+# Sort numerically and get unique
+awk '{ print $1 | "sort -n | uniq" }' data.txt
+
+# Count lines with wc
+awk '{ print $0 | "wc -l" }' data.txt
+
+# Send email
+awk 'END { 
+    print "Process complete: " NR " lines" | "mail -s \"Report\" user@example.com"
+}' data.txt
+
+# Pipe to multiple commands
+awk '{ 
+    print $1 | "sort | uniq -c | sort -rn | head -10"
+}' access.log
+```
+
+---
+
+### Two-Way Communication
+
+```awk
+# Syntax (gawk only)
+print DATA |& "command"    # send to command
+"command" |& getline var   # receive from command
+```
+
+- Send data to command AND receive results back
+- Uses `|&` operator
+- Must close write end before reading
+
+#### Examples
+
+```awk
+# Basic two-way communication
+BEGIN {
+    cmd = "tr [a-z] [A-Z]"
+    
+    # Send to command
+    print "hello, world!" |& cmd
+    
+    # Close write end (important!)
+    close(cmd, "to")
+    
+    # Read from command
+    cmd |& getline result
+    print result
+    
+    # Close completely
+    close(cmd)
+}
+# Output: HELLO, WORLD!
+```
+
+```awk
+# Interact with bc calculator
+BEGIN {
+    cmd = "bc"
+    
+    print "scale=2; 22/7" |& cmd
+    close(cmd, "to")
+    
+    cmd |& getline pi
+    print "Pi approximation:", pi
+    
+    close(cmd)
+}
+# Output: Pi approximation: 3.14
+```
+
+```awk
+# Multiple exchanges
+BEGIN {
+    cmd = "cat -n"    # number lines
+    
+    print "first" |& cmd
+    print "second" |& cmd
+    print "third" |& cmd
+    close(cmd, "to")
+    
+    while ((cmd |& getline line) > 0) {
+        print line
+    }
+    close(cmd)
+}
+```
+
+---
+
+### Closing Files and Pipes
+
+```awk
+# Syntax
+close("filename")
+close("command")
+close("command", "to")    # close write end only (two-way)
+close("command", "from")  # close read end only (two-way)
+```
+
+#### When to Close
+
+- Writing to many different files (avoid "too many open files")
+- Re-reading a file from beginning
+- Ensuring pipe command completes
+- Two-way communication (must close "to" before reading)
+
+#### Examples
+
+```awk
+# Close after writing to many files
+{
+    outfile = "output_" $1 ".txt"
+    print $0 > outfile
+    close(outfile)
+}
+
+# Re-read a file
+BEGIN {
+    while ((getline line < "data.txt") > 0)
+        print "First pass:", line
+    close("data.txt")
+    
+    while ((getline line < "data.txt") > 0)
+        print "Second pass:", line
+    close("data.txt")
+}
+
+# Ensure sort completes before continuing
+{
+    print $0 | "sort > sorted.txt"
+}
+END {
+    close("sort > sorted.txt")
+    # Now sorted.txt is complete
+}
+```
+
+---
+
+### Practical Examples
+
+#### Split File by Column Value
+
+```awk
+{
+    outfile = $1 ".txt"
+    print $0 > outfile
+}
+END {
+    # Close all files (good practice)
+    for (file in PROCINFO["open_files"])
+        close(file)
+}
+```
+
+#### Create Report with Header/Footer
+
+```awk
+BEGIN {
+    outfile = "report.txt"
+    print "====== REPORT ======" > outfile
+    print "Date:", strftime("%Y-%m-%d") > outfile
+    print "" > outfile
+}
+{
+    print $0 > outfile
+}
+END {
+    print "" > outfile
+    print "Total lines:", NR > outfile
+    print "====================" > outfile
+    close(outfile)
+}
+```
+
+#### Log Errors to Separate File
+
+```awk
+{
+    if (/ERROR/) {
+        print $0 > "errors.log"
+        print $0 >> "all.log"
+    } else if (/WARNING/) {
+        print $0 > "warnings.log"
+        print $0 >> "all.log"
+    } else {
+        print $0 >> "all.log"
+    }
+}
+```
+
+#### Process and Sort Output
+
+```awk
+{
+    # Count occurrences
+    count[$1]++
+}
+END {
+    # Print and sort
+    for (key in count) {
+        print count[key], key | "sort -rn"
+    }
+    close("sort -rn")
+}
+```
+
+#### Interactive Command
+
+```awk
+# Query a database (example with sqlite)
+BEGIN {
+    db = "sqlite3 mydb.db"
+    
+    print "SELECT name FROM users WHERE active=1;" |& db
+    close(db, "to")
+    
+    while ((db |& getline name) > 0) {
+        print "Active user:", name
+    }
+    close(db)
+}
+```
+
+---
+
+### Output Redirection Quick Reference
+
+#### Operators
+
+| Operator | Description | Creates File | Overwrites |
+|----------|-------------|--------------|------------|
+| `>` | Write to file | Yes | Yes (first write) |
+| `>>` | Append to file | Yes | No |
+| `\|` | Pipe to command | N/A | N/A |
+| `\|&` | Two-way pipe (gawk) | N/A | N/A |
+
+#### Syntax Summary
+
+```awk
+# Write to file (overwrites)
+print "text" > "file.txt"
+
+# Append to file
+print "text" >> "file.txt"
+
+# Pipe to command
+print "text" | "command"
+
+# Two-way communication (gawk)
+print "text" |& "command"
+close("command", "to")
+"command" |& getline result
+close("command")
+
+# Close file/pipe
+close("file.txt")
+close("command")
+```
+
+#### Common Patterns
+
+```awk
+# Write different data to different files
+/error/   { print > "errors.txt" }
+/warning/ { print > "warnings.txt" }
+          { print > "all.txt" }
+
+# Dynamic filename
+{ print > ($1 ".txt") }
+
+# Sorted unique output
+{ print | "sort -u" }
+
+# Top 10 most frequent
+{ count[$1]++ }
+END {
+    for (k in count) print count[k], k | "sort -rn | head -10"
+}
+
+# Write to file and stdout
+{ 
+    print > "file.txt"
+    print
+}
+
+# Tee equivalent
+{ print | "tee file.txt" }
+```
+
+---
+
+[↑ Back to Index](#index)
 
 ---
 
