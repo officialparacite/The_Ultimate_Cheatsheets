@@ -20,7 +20,7 @@
 | - | [Pattern Matching Results](#pattern-matching-results) | [QR](#quick-reference-pattern-matching) |
 | - | [GNU AWK Only](#gnu-awk-gawk-only) | [QR](#quick-reference-gawk) |
 | - | [Operators](#operators) | [QR](#quick-reference-operators) |
-| - | [Regular Expressions](#regular-expressions) | [QR](#quick-reference-regex) |
+| - | [Regular Expressions](#regular-expressions) | [QR](#regex-quick-reference) |
 | - | [Arrays](#arrays) | [QR](#quick-reference-arrays) |
 
 
@@ -1397,6 +1397,199 @@ match($0, /[0-9]+/) { print "Found number at position:", RSTART }
 
 ---
 
+## Regex Quick Reference
+
+### Anchors & Boundaries
+
+| Pattern | Meaning |
+|---------|---------|
+| `^` | Start of string |
+| `$` | End of string |
+| `\<` | Start of word (gawk) |
+| `\>` | End of word (gawk) |
+| `\y` | Word boundary (gawk) |
+
+
+### Quantifiers
+
+| Pattern | Meaning |
+|---------|---------|
+| `*` | Zero or more |
+| `+` | One or more |
+| `?` | Zero or one |
+| `{n}` | Exactly n |
+| `{n,}` | n or more |
+| `{n,m}` | n to m |
+
+
+### Character Classes
+
+| Pattern | Meaning |
+|---------|---------|
+| `.` | Any character |
+| `[abc]` | a, b, or c |
+| `[^abc]` | NOT a, b, c |
+| `[a-z]` | Range a-z |
+| `[0-9]` | Digit |
+| `[a-zA-Z]` | Any letter |
+| `[a-zA-Z0-9]` | Alphanumeric |
+
+
+### POSIX Classes
+
+| Class | Meaning |
+|-------|---------|
+| `[[:digit:]]` | `[0-9]` |
+| `[[:alpha:]]` | `[a-zA-Z]` |
+| `[[:alnum:]]` | `[a-zA-Z0-9]` |
+| `[[:space:]]` | All whitespace |
+| `[[:blank:]]` | Space and tab |
+| `[[:upper:]]` | `[A-Z]` |
+| `[[:lower:]]` | `[a-z]` |
+| `[[:punct:]]` | Punctuation |
+| `[[:xdigit:]]` | `[0-9A-Fa-f]` |
+| `[[:print:]]` | Printable |
+| `[[:graph:]]` | Visible (no space) |
+| `[[:cntrl:]]` | Control chars |
+
+
+### Escape Sequences
+
+| Pattern | Meaning |
+|---------|---------|
+| `\.` | Literal dot |
+| `\*` | Literal asterisk |
+| `\+` | Literal plus |
+| `\?` | Literal question |
+| `\[` `\]` | Literal brackets |
+| `\(` `\)` | Literal parens |
+| `\{` `\}` | Literal braces |
+| `\^` | Literal caret |
+| `\$` | Literal dollar |
+| `\\` | Literal backslash |
+| `\t` | Tab |
+| `\n` | Newline |
+| `\r` | Carriage return |
+| `\b` | Backspace |
+| `\f` | Form feed |
+
+
+### Operators & Syntax
+
+```awk
+/regex/           # line matches
+!/regex/          # line doesn't match
+$1 ~ /regex/      # field matches
+$1 !~ /regex/     # field doesn't match
+(a|b)             # alternation (OR)
+()                # grouping
+```
+
+### Case Sensitivity
+
+```awk
+# Default: case sensitive
+/hello/                      # only lowercase
+
+# Case insensitive (gawk)
+BEGIN { IGNORECASE = 1 }
+/hello/                      # matches Hello, HELLO, etc.
+
+# Manual case insensitive
+/[Hh][Ee][Ll][Ll][Oo]/       # any case
+```
+
+### Dynamic Regex
+
+```awk
+# Pattern from variable
+BEGIN { pat = "error" }
+$0 ~ pat { print }
+
+# Building pattern
+BEGIN { ext = "txt" }
+$0 ~ ("\\." ext "$") { print }
+
+# Pattern from field
+$1 ~ $2 { print }
+```
+
+### Greedy Matching
+
+```awk
+# AWK is always greedy (longest match)
+/<.*>/        # matches entire "<b>x</b>"
+
+# Workaround: negated class
+/<[^>]*>/     # matches "<b>" only
+/"[^"]*"/     # matches first quoted string
+```
+
+### Functions
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `sub(/re/, "new")` | Replace first | 0 or 1 |
+| `sub(/re/, "new", target)` | Replace in target | 0 or 1 |
+| `gsub(/re/, "new")` | Replace all | Count |
+| `gsub(/re/, "new", target)` | Replace all in target | Count |
+| `match(str, /re/)` | Find position | Position (0=none) |
+| `split(str, arr, /re/)` | Split by regex | Element count |
+
+
+```awk
+# match() sets RSTART and RLENGTH
+if (match($0, /[0-9]+/)) {
+    print substr($0, RSTART, RLENGTH)
+}
+```
+
+### gawk Functions
+
+```awk
+# gensub(regex, replacement, how, [target])
+# Returns new string (doesn't modify original)
+
+gensub(/o/, "0", "g")           # replace all
+gensub(/o/, "0", 1)             # replace first
+gensub(/o/, "0", 2)             # replace second
+
+# Backreferences
+gensub(/(.+) (.+)/, "\\2 \\1", 1)   # swap words
+
+# patsplit(string, array, pattern)
+# Extract all matches into array
+
+patsplit("ab12cd34", nums, /[0-9]+/)
+# nums[1]="12", nums[2]="34"
+
+patsplit($0, emails, /[^[:space:]]+@[^[:space:]]+/)
+```
+
+### Common Patterns
+
+| Pattern | Validates |
+|---------|-----------|
+| `/^$/` | Empty line |
+| `/^[[:space:]]*$/` | Blank line |
+| `/[^[:space:]]/` | Non-blank line |
+| `/^#/` | Comment line |
+| `/^[0-9]+$/` | Integer |
+| `/^-?[0-9]+$/` | Signed integer |
+| `/^[0-9]*\.?[0-9]+$/` | Decimal |
+| `/^-?[0-9]*\.?[0-9]+$/` | Signed decimal |
+| `/^0x[0-9A-Fa-f]+$/` | Hex number |
+| `/^[^@]+@[^@]+\.[a-z]+$/` | Email (simple) |
+| `/^[0-9]{3}-[0-9]{4}$/` | Phone XXX-XXXX |
+| `/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/` | Phone XXX-XXX-XXXX |
+| `/^[0-9]{1,3}(\.[0-9]{1,3}){3}$/` | IP address |
+| `/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/` | Date YYYY-MM-DD |
+| `/^https?:\/\//` | URL |
+| `/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/` | MAC address |
+
+
+---
+
 [↑ Back to Regex Navigation](#regex-quick-navigation)
 
 ---
@@ -1965,7 +2158,7 @@ END {
 
 ---
 
-## Quick Reference
+## Arrays Quick Reference
 
 | Operation | Syntax |
 |-----------|--------|
