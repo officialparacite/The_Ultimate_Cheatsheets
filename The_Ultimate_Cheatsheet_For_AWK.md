@@ -23,6 +23,7 @@
 | - | [Common Patterns](#quick-reference-common-patterns) |
 | - | [Field Access](#quick-reference-field-access) |
 | - | [Operators](#operators) |
+| - | [Regular Expressions](#regular-expressions) |
 
 
 
