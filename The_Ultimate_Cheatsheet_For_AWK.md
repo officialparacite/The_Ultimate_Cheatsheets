@@ -7,21 +7,21 @@
 
 ## Index
 
-| Table of Contents |
-|---------|
-| [Program Structure](#awk-program-structure) |
-| [Running AWK](#running-awk) |
-| [Command Line Options](#command-line-options) |
-| [Block Types](#block-types) |
-| [Printing & Output](#printing--output) |
-| [Print Quick Reference](#print-quick-reference) |
-| [Standard Variables](#standard-variables-all-awk) |
-| [Record/Field Counters](#recordfield-counters) |
-| [File and Arguments](#file-and-arguments) |
-| [Pattern Matching Results](#pattern-matching-results) |
-| [GNU AWK Only](#gnu-awk-gawk-only) |
-| [Common Patterns](#quick-reference-common-patterns) |
-| [Field Access](#quick-reference-field-access) |
+| * | Table of Contents |
+|----|-----|
+| - | [Program Structure](#awk-program-structure) |
+| - | [Running AWK](#running-awk) |
+| - | [Command Line Options](#command-line-options) |
+| - | [Block Types](#block-types) |
+| - | [Printing & Output](#printing--output) |
+| - | [Print Quick Reference](#print-quick-reference) |
+| - | [Standard Variables](#standard-variables-all-awk) |
+| - | [Record/Field Counters](#recordfield-counters) |
+| - | [File and Arguments](#file-and-arguments) |
+| - | [Pattern Matching Results](#pattern-matching-results) |
+| - | [GNU AWK Only](#gnu-awk-gawk-only) |
+| - | [Common Patterns](#quick-reference-common-patterns) |
+| - | [Field Access](#quick-reference-field-access) |
 
 
 ---
