@@ -24,7 +24,7 @@
 | - | [Field Access](#quick-reference-field-access) |
 | - | [Operators](#operators) |
 | - | [Regular Expressions](#regular-expressions) |
-
+| - | [Arrays](#arrays) |
 
 
 ---
@@ -1326,5 +1326,591 @@ match($0, /[0-9]+/) { print "Found number at position:", RSTART }
 [↑ Back to Regex Navigation](#regex-quick-navigation)
 
 ---
+
+## Arrays
+
+---
+
+## Arrays Quick Navigation
+
+| # | Section | Description |
+|---|---------|-------------|
+| 1 | [Array Basics](#array-basics) | Creating, accessing, assigning |
+| 2 | [Deleting Elements](#deleting-array-elements) | `delete` statement |
+| 3 | [Checking Membership](#checking-array-membership) | `in` operator |
+| 4 | [Iterating Arrays](#iterating-over-arrays) | `for (key in array)` |
+| 5 | [Array Length](#array-length) | Counting elements |
+| 6 | [Multi-Dimensional Arrays](#multi-dimensional-arrays) | Simulating 2D arrays |
+| 7 | [SUBSEP](#subsep) | Multi-index separator |
+| 8 | [Array Functions (gawk)](#array-functions-gawk) | `asort`, `asorti`, `delete` |
+| 9 | [Common Array Patterns](#common-array-patterns) | Real-world examples |
+
+---
+
+## Array Basics
+
+```awk
+# Syntax
+array_name[index] = value
+
+# Arrays are associative (like dictionaries/hash maps)
+# - No declaration needed
+# - No size limit
+# - Index can be string or number
+# - Indexes need not be continuous
+```
+
+### Creating and Accessing
+
+```awk
+BEGIN {
+    # String indexes
+    fruits["mango"] = "yellow"
+    fruits["orange"] = "orange"
+    fruits["apple"] = "red"
+
+    # Numeric indexes
+    numbers[1] = "one"
+    numbers[2] = "two"
+    numbers[100] = "hundred"  # gaps are OK
+
+    # Access elements
+    print fruits["mango"]     # yellow
+    print numbers[1]          # one
+}
+```
+
+### Uninitialized Elements
+
+```awk
+BEGIN {
+    # Accessing non-existent element returns empty string
+    print arr["missing"]      # prints empty string
+    print arr["missing"] + 0  # prints 0 (numeric context)
+
+    # This also CREATES the element!
+    # Be careful when checking existence
+}
+```
+
+| Operation | Syntax | Notes |
+|-----------|--------|-------|
+| Create/Assign | `arr[key] = value` | Creates if doesn't exist |
+| Access | `arr[key]` | Returns "" if missing |
+| Numeric access | `arr[key] + 0` | Returns 0 if missing |
+
+---
+
+## Deleting Array Elements
+
+```awk
+# Syntax
+delete array_name[index]
+
+# Delete entire array (gawk)
+delete array_name
+```
+
+### Examples
+
+```awk
+BEGIN {
+    fruits["mango"] = "yellow"
+    fruits["orange"] = "orange"
+    fruits["apple"] = "red"
+
+    # Delete single element
+    delete fruits["orange"]
+
+    print fruits["orange"]    # prints empty string
+
+    # Delete entire array (gawk)
+    delete fruits
+}
+```
+
+```awk
+# Delete elements matching condition
+{
+    for (key in arr) {
+        if (arr[key] < 10) {
+            delete arr[key]
+        }
+    }
+}
+```
+
+---
+
+## Checking Array Membership
+
+```awk
+# Syntax: (index in array)
+# Returns 1 (true) if exists, 0 (false) if not
+# Does NOT create the element (unlike direct access)
+
+BEGIN {
+    fruits["mango"] = "yellow"
+    fruits["apple"] = "red"
+
+    # Check if key exists
+    if ("mango" in fruits) {
+        print "mango exists"
+    }
+
+    if ("banana" in fruits) {
+        print "banana exists"
+    } else {
+        print "no banana"       # this prints
+    }
+}
+```
+
+### Safe Access Pattern
+
+```awk
+# Wrong: creates element if missing
+if (arr[key] != "") { ... }
+
+# Right: check first, then access
+if (key in arr) {
+    print arr[key]
+}
+```
+
+| Method | Creates Element? | Use Case |
+|--------|-----------------|----------|
+| `arr[key]` | Yes | When you want the value |
+| `(key in arr)` | No | When checking existence |
+
+---
+
+## Iterating Over Arrays
+
+```awk
+# Syntax
+for (variable in array) {
+    # variable contains the INDEX, not value
+    # use array[variable] to get value
+}
+```
+
+### Examples
+
+```awk
+BEGIN {
+    fruits["mango"] = "yellow"
+    fruits["orange"] = "orange"
+    fruits["apple"] = "red"
+
+    # Iterate over all elements
+    for (fruit in fruits) {
+        print fruit, "is", fruits[fruit]
+    }
+}
+
+# Output (order not guaranteed):
+# mango is yellow
+# orange is orange
+# apple is red
+```
+
+```awk
+# Count word frequency
+{
+    for (i = 1; i <= NF; i++) {
+        words[$i]++
+    }
+}
+END {
+    for (word in words) {
+        print word, words[word]
+    }
+}
+```
+
+> [!WARNING]
+> Array iteration order is **not guaranteed**. Don't rely on any specific order.
+
+---
+
+## Array Length
+
+```awk
+# Method 1: length() function (gawk and modern awk)
+BEGIN {
+    arr[1] = "a"
+    arr[2] = "b"
+    arr[5] = "c"
+
+    print length(arr)    # 3 (counts elements, not max index)
+}
+
+# Method 2: Manual count (portable)
+BEGIN {
+    count = 0
+    for (key in arr) {
+        count++
+    }
+    print count
+}
+```
+
+---
+
+## Multi-Dimensional Arrays
+
+AWK only supports one-dimensional arrays, but you can simulate multi-dimensional:
+
+### Method 1: String Index
+
+```awk
+BEGIN {
+    # Simulating 3x3 array
+    # array[row,col] = value
+
+    array["0,0"] = 100; array["0,1"] = 200; array["0,2"] = 300
+    array["1,0"] = 400; array["1,1"] = 500; array["1,2"] = 600
+    array["2,0"] = 700; array["2,1"] = 800; array["2,2"] = 900
+
+    # Access
+    print array["1,1"]    # 500
+
+    # Iterate
+    for (key in array) {
+        print key, "=", array[key]
+    }
+}
+```
+
+### Method 2: Using SUBSEP (Preferred)
+
+```awk
+BEGIN {
+    # AWK automatically joins indexes with SUBSEP
+    array[0,0] = 100    # actually stored as array["0" SUBSEP "0"]
+    array[0,1] = 200
+    array[1,0] = 400
+    array[1,1] = 500
+    
+    # Access
+    print array[1,1]      # 500
+    
+    # Check membership
+    if ((1,1) in array) {
+        print "exists"
+    }
+}
+```
+
+| Syntax | Stored As |
+|--------|-----------|
+| `arr["0,0"]` | `arr["0,0"]` |
+| `arr[0,0]` | `arr["0\0340"]` (using SUBSEP) |
+
+---
+
+## SUBSEP
+
+```awk
+# SUBSEP = subscript separator for multi-dimensional arrays
+# Default value: "\034" (non-printing character)
+
+BEGIN {
+    # Default behavior
+    arr[1,2] = "value"
+
+    for (key in arr) {
+        print key           # prints "1\0342" (not readable)
+    }
+}
+
+# Custom SUBSEP for readable keys
+BEGIN {
+    SUBSEP = ":"
+
+    arr[1,2] = "value"
+    arr["x","y"] = "coord"
+
+    for (key in arr) {
+        print key           # prints "1:2" and "x:y"
+    }
+}
+```
+
+### Splitting Multi-Index Keys
+
+```awk
+BEGIN {
+    SUBSEP = ":"
+    arr[1,2] = 100
+    arr[3,4] = 200
+
+    for (key in arr) {
+        split(key, indices, SUBSEP)
+        row = indices[1]
+        col = indices[2]
+        print "arr[" row "," col "] =", arr[key]
+    }
+}
+
+# Output:
+# arr[1,2] = 100
+# arr[3,4] = 200
+```
+
+---
+
+## Array Functions (gawk)
+
+### asort() - Sort by Values
+
+```awk
+# Syntax: asort(source, [dest])
+# Sorts array by VALUES
+# Replaces indexes with 1, 2, 3...
+# Returns number of elements
+
+BEGIN {
+    arr["x"] = "banana"
+    arr["y"] = "apple"
+    arr["z"] = "cherry"
+ 
+    n = asort(arr)
+
+    for (i = 1; i <= n; i++) {
+        print i, arr[i]
+    }
+}
+
+# Output:
+# 1 apple
+# 2 banana
+# 3 cherry
+```
+
+### asorti() - Sort by Indexes
+
+```awk
+# Syntax: asorti(source, dest)
+# Sorts array INDEXES into dest array
+# Returns number of elements
+
+BEGIN {
+    arr["banana"] = 1
+    arr["apple"] = 2
+    arr["cherry"] = 3
+
+    n = asorti(arr, sorted)
+
+    for (i = 1; i <= n; i++) {
+        key = sorted[i]
+        print key, arr[key]
+    }
+}
+
+# Output:
+# apple 2
+# banana 1
+# cherry 3
+```
+
+### Custom Sort Order (gawk 4.0+)
+
+```awk
+# PROCINFO["sorted_in"] controls iteration order
+
+BEGIN {
+    PROCINFO["sorted_in"] = "@ind_str_asc"   # sort by index, string, ascending
+
+    arr["banana"] = 3
+    arr["apple"] = 1
+    arr["cherry"] = 2
+
+    for (key in arr) {
+        print key, arr[key]
+    }
+}
+
+# Output (sorted by key):
+# apple 1
+# banana 3
+# cherry 2
+```
+
+| PROCINFO["sorted_in"] | Order |
+|----------------------|-------|
+| `"@unsorted"` | Default, arbitrary |
+| `"@ind_str_asc"` | Index as string, ascending |
+| `"@ind_str_desc"` | Index as string, descending |
+| `"@ind_num_asc"` | Index as number, ascending |
+| `"@ind_num_desc"` | Index as number, descending |
+| `"@val_str_asc"` | Value as string, ascending |
+| `"@val_str_desc"` | Value as string, descending |
+| `"@val_num_asc"` | Value as number, ascending |
+| `"@val_num_desc"` | Value as number, descending |
+
+---
+
+## Common Array Patterns
+
+### Word Frequency Count
+
+```awk
+# Count occurrences of each word
+{
+    for (i = 1; i <= NF; i++) {
+        words[$i]++
+    }
+}
+END {
+    for (word in words) {
+        print words[word], word
+    }
+}
+
+# Run: awk -f wordfreq.awk file.txt | sort -rn | head
+```
+
+### Remove Duplicates
+
+```awk
+# Print only unique lines
+!seen[$0]++
+
+# Explanation:
+# - seen[$0] is 0 (false) first time
+# - !seen[$0] is 1 (true), so line prints
+# - ++ increments AFTER evaluation
+# - Next time same line: seen[$0] is 1, !1 is false, no print
+```
+
+### Group By Field
+
+```awk
+# Sum values grouped by first field
+{
+    sum[$1] += $2
+}
+END {
+    for (key in sum) {
+        print key, sum[key]
+    }
+}
+
+# Input:
+# apple 10
+# banana 20
+# apple 5
+# banana 15
+
+# Output:
+# apple 15
+# banana 35
+```
+
+### Find Maximum per Group
+
+```awk
+{
+    if ($2 > max[$1]) {
+        max[$1] = $2
+        maxline[$1] = $0
+    }
+}
+END {
+    for (key in maxline) {
+        print maxline[key]
+    }
+}
+```
+
+### Two-File Processing
+
+```awk
+# First file: build lookup array
+# Second file: use lookup array
+
+NR == FNR {
+    # First file
+    lookup[$1] = $2
+    next
+}
+
+# Second file
+$1 in lookup {
+    print $0, lookup[$1]
+}
+
+# Run: awk -f script.awk lookup.txt data.txt
+```
+
+### Count Unique Values
+
+```awk
+{
+    unique[$1] = 1
+}
+END {
+    print length(unique), "unique values"
+}
+```
+
+### Store Lines in Array
+
+```awk
+# Store all lines, print in reverse
+{
+    lines[NR] = $0
+}
+END {
+    for (i = NR; i >= 1; i--) {
+        print lines[i]
+    }
+}
+```
+
+### Transpose Data
+
+```awk
+# Convert rows to columns
+{
+    for (i = 1; i <= NF; i++) {
+        arr[i,NR] = $i
+    }
+    if (NF > maxcol) maxcol = NF
+}
+END {
+    for (i = 1; i <= maxcol; i++) {
+        for (j = 1; j <= NR; j++) {
+            printf "%s%s", arr[i,j], (j < NR ? "\t" : "\n")
+        }
+    }
+}
+```
+
+---
+
+## Quick Reference
+
+| Operation | Syntax |
+|-----------|--------|
+| Create | `arr[key] = value` |
+| Access | `arr[key]` |
+| Delete element | `delete arr[key]` |
+| Delete array | `delete arr` |
+| Check exists | `if (key in arr)` |
+| Iterate | `for (k in arr)` |
+| Length | `length(arr)` |
+| Sort values | `asort(arr)` |
+| Sort indexes | `asorti(arr, dest)` |
+| Multi-dim | `arr[i,j]` or `arr["i,j"]` |
+
+---
+
+[↑ Back to Arrays Navigation](#arrays-quick-navigation)
+
+---
+
 
 
