@@ -22,6 +22,8 @@
 | - | [GNU AWK Only](#gnu-awk-gawk-only) |
 | - | [Common Patterns](#quick-reference-common-patterns) |
 | - | [Field Access](#quick-reference-field-access) |
+| - | [Operators](#operators) |
+
 
 
 ---
@@ -649,4 +651,18 @@ NF = 3      # truncate to 3 fields
 
 ---
 
+## Operators
 
+| * | Operators | Description |
+|-|-|-|
+| - | Arithmetic Operators | `+` `-` `*` `/` `%` (modulo) |
+| - | Increment & Decrement Operators | `++x` `x++` `--x` `x--` |
+| - | Assignment Operators | `=` `+=` `-=` `*=` `/=` `%=` `^=` |
+| - | Relational Operators | `==` `!=` `<` `>` `<=` `>=` |
+| - | Logical Operators | `&&` (AND) `\|\|` (OR) `!` (NOT) |
+| - | Ternary Operator | `condition ? if_true : if_false` |
+| - | Unary Operators | `+` (positive) `-` (negative) `!` (NOT) |
+| - | Exponential Operators | `^` or `**` |
+| - | String Concatenation Operator | `"hello" "world"` (space between) |
+| - | Array Membership Operator | `(key in array)` |
+| - | Regular Expression Operators | `~` (match) `!~` (not match) |
