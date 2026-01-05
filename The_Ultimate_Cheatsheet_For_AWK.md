@@ -7,24 +7,21 @@
 
 ## Index
 
-| * | Table of Contents |
-|----|-----|
-| - | [Program Structure](#awk-program-structure) |
-| - | [Running AWK](#running-awk) |
-| - | [Command Line Options](#command-line-options) |
-| - | [Block Types](#block-types) |
-| - | [Printing & Output](#printing--output) |
-| - | [Print Quick Reference](#print-quick-reference) |
-| - | [Standard Variables](#standard-variables-all-awk) |
-| - | [Record/Field Counters](#recordfield-counters) |
-| - | [File and Arguments](#file-and-arguments) |
-| - | [Pattern Matching Results](#pattern-matching-results) |
-| - | [GNU AWK Only](#gnu-awk-gawk-only) |
-| - | [Common Patterns](#quick-reference-common-patterns) |
-| - | [Field Access](#quick-reference-field-access) |
-| - | [Operators](#operators) |
-| - | [Regular Expressions](#regular-expressions) |
-| - | [Arrays](#arrays) |
+| * | Table of Contents | Quick Reference |
+|----|-----|-----|
+| - | [Program Structure](#awk-program-structure) | [QR](#quick-reference-structure) |
+| - | [Running AWK](#running-awk) | [QR](#quick-reference-running) |
+| - | [Command Line Options](#command-line-options) | [QR](#quick-reference-options) |
+| - | [Block Types](#block-types) | [QR](#quick-reference-blocks) |
+| - | [Printing & Output](#printing--output) | [QR](#print-quick-reference) |
+| - | [Standard Variables](#standard-variables-all-awk) | [QR](#quick-reference-variables) |
+| - | [Record/Field Counters](#recordfield-counters) | [QR](#quick-reference-field-access) |
+| - | [File and Arguments](#file-and-arguments) | [QR](#quick-reference-files) |
+| - | [Pattern Matching Results](#pattern-matching-results) | [QR](#quick-reference-pattern-matching) |
+| - | [GNU AWK Only](#gnu-awk-gawk-only) | [QR](#quick-reference-gawk) |
+| - | [Operators](#operators) | [QR](#quick-reference-operators) |
+| - | [Regular Expressions](#regular-expressions) | [QR](#quick-reference-regex) |
+| - | [Arrays](#arrays) | [QR](#quick-reference-arrays) |
 
 
 ---
@@ -37,7 +34,7 @@ BEGIN { ... }    # Runs ONCE before any input is read
 END   { ... }    # Runs ONCE after all input is processed
 ```
 
-## Quick Example
+### Quick Example
 
 ```awk
 #!/usr/bin/awk -f
@@ -64,6 +61,14 @@ END {
 > /error/  { print }        # only lines containing "error"
 > $3 > 100 { print $1 }     # only if 3rd field > 100
 > ```
+
+### Quick Reference: Structure
+
+```awk
+BEGIN { }     # once before input
+      { }     # each line  
+END   { }     # once after input
+```
 
 ---
 
@@ -106,6 +111,16 @@ awk -f command.awk data.csv
 # Or make executable
 chmod +x command.awk
 ./command.awk data.csv
+```
+
+### Quick Reference: Running
+
+```bash
+awk 'program' file                    # inline
+awk -f script.awk file                # from file
+awk -F',' '{print $1}' file           # set delimiter
+awk -v x=10 '{print x}' file          # pass variable
+chmod +x script.awk && ./script.awk   # executable
 ```
 
 ---
@@ -177,6 +192,19 @@ awk --posix '{print}' file.txt
 awk --sandbox '{print}' file.txt
 ```
 
+### Quick Reference: Options
+
+| Flag | Purpose |
+|------|---------|
+| `-F','` | Field separator |
+| `-f file` | Program from file |
+| `-v var=val` | Set variable |
+| `--posix` | POSIX mode |
+| `--lint` | Show warnings |
+| `--version` | Show version |
+
+---
+
 ## Block Types
 
 You can mix and match multiple blocks freely:
@@ -238,11 +266,20 @@ red car         Has red
 > /pattern/ { print }
 > ```
 
+### Quick Reference: Blocks
+
+| Pattern | Matches |
+|---------|---------|
+| `BEGIN` | Before input |
+| `END` | After input |
+| `/regex/` | Line matches regex |
+| `expression` | Expression is true |
+| `pat1,pat2` | Range (inclusive) |
+| (empty) | Every line |
+
 ---
 
 ## Printing & Output
-
----
 
 ### Sample Data
 
@@ -325,23 +362,6 @@ awk 'length($0) > 18' marks.txt
 4) Kedar   English   85
 ```
 
----
-
-## Print Quick Reference
-
-| Task | Command |
-|------|---------|
-| Print entire line | `{print}` or `{print $0}` |
-| Print specific field | `{print $1}` |
-| Print multiple fields | `{print $1, $3}` |
-| Print with separator | `{print $1 "\t" $2}` |
-| Print literal text | `{print "Name:", $1}` |
-| Print line number | `{print NR, $0}` |
-| Print matching lines | `/pattern/ {print}` |
-| Print field count | `{print NF}` |
-| Print last field | `{print $NF}` |
-
-
 ### Formatted Output
 
 ```bash
@@ -356,7 +376,6 @@ Kedar      85
 Hari       89
 ```
 
-
 | Format | Description |
 |--------|-------------|
 | `%s` | String |
@@ -368,6 +387,19 @@ Hari       89
 | `%-10s` | Left-align, 10 char width |
 | `%10s` | Right-align, 10 char width |
 
+### Print Quick Reference
+
+| Task | Command |
+|------|---------|
+| Print entire line | `{print}` or `{print $0}` |
+| Print specific field | `{print $1}` |
+| Print multiple fields | `{print $1, $3}` |
+| Print with separator | `{print $1 "\t" $2}` |
+| Print literal text | `{print "Name:", $1}` |
+| Print line number | `{print NR, $0}` |
+| Print matching lines | `/pattern/ {print}` |
+| Print field count | `{print NF}` |
+| Print last field | `{print $NF}` |
 
 ---
 
@@ -461,6 +493,18 @@ BEGIN { SUBSEP = ":" }
 # Output: 1:2
 ```
 
+### Quick Reference: Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `FS` | space | Input field separator |
+| `OFS` | space | Output field separator |
+| `RS` | newline | Input record separator |
+| `ORS` | newline | Output record separator |
+| `OFMT` | `"%.6g"` | Number output format |
+| `CONVFMT` | `"%.6g"` | Number conversion format |
+| `SUBSEP` | `"\034"` | Array subscript separator |
+
 ---
 
 ## Record/Field Counters
@@ -505,6 +549,20 @@ NR != FNR { print "Processing file 2" }
 # Output: two
 ```
 
+### Quick Reference: Field Access
+
+```awk
+$0          # entire line
+$1          # first field
+$NF         # last field
+$(NF-1)     # second-to-last field
+$NF = "x"   # modify last field
+NF = 3      # truncate to 3 fields
+NR          # line number (total)
+FNR         # line number (current file)
+NF          # number of fields
+```
+
 ---
 
 ## File and Arguments
@@ -544,6 +602,18 @@ BEGIN { print ENVIRON["HOME"] }
 # Output: /home/username
 ```
 
+### Quick Reference: Files
+
+```awk
+FILENAME          # current filename
+ARGC              # argument count
+ARGV[0]           # "awk"
+ARGV[1]           # first file
+ENVIRON["HOME"]   # environment variable
+ENVIRON["USER"]   # username
+ENVIRON["PATH"]   # path
+```
+
 ---
 
 ## Pattern Matching Results
@@ -568,6 +638,15 @@ BEGIN { print ENVIRON["HOME"] }
 # Found: 123
 # Position: 4
 # Length: 3
+```
+
+### Quick Reference: Pattern Matching
+
+```awk
+match($0, /regex/)              # find position
+RSTART                          # start position (0 if no match)
+RLENGTH                         # match length (-1 if no match)
+substr($0, RSTART, RLENGTH)     # extract match
 ```
 
 ---
@@ -618,35 +697,15 @@ BEGIN { LINT = 1 }
 # Warns about assignment in condition
 ```
 
----
+### Quick Reference: gawk
 
-## Quick Reference: Common Patterns
-
-```awk
-NR == 1                 # first line only
-NR > 1                  # skip header
-NR == FNR               # first file only (multi-file)
-NF > 0                  # non-empty lines
-NF == 4                 # lines with exactly 4 fields
-$1 == "error"           # first field equals "error"
-/regex/                 # line matches regex
-$2 ~ /regex/            # second field matches regex
-$3 !~ /regex/           # third field doesn't match
-END { print NR }        # total line count
-```
-
----
-
-## Quick Reference: Field Access
-
-```awk
-$0          # entire line
-$1          # first field
-$NF         # last field
-$(NF-1)     # second-to-last field
-$NF = "x"   # modify last field
-NF = 3      # truncate to 3 fields
-```
+| Variable | Description |
+|----------|-------------|
+| `IGNORECASE = 1` | Case-insensitive matching |
+| `FPAT = "pattern"` | Define field by pattern |
+| `FIELDWIDTHS = "5 3 8"` | Fixed-width fields |
+| `BINMODE = 1` | Binary mode |
+| `LINT = 1` | Enable warnings |
 
 ---
 
@@ -665,6 +724,21 @@ NF = 3      # truncate to 3 fields
 | - | String Concatenation Operator | `"hello" "world"` (space between) |
 | - | Array Membership Operator | `(key in array)` |
 | - | Regular Expression Operators | `~` (match) `!~` (not match) |
+
+
+### Quick Reference: Operators
+
+| Type | Operators |
+|------|-----------|
+| Arithmetic | `+` `-` `*` `/` `%` `^` |
+| Assignment | `=` `+=` `-=` `*=` `/=` `%=` `^=` |
+| Comparison | `==` `!=` `<` `>` `<=` `>=` |
+| Logical | `&&` `\|\|` `!` |
+| Regex | `~` `!~` |
+| Ternary | `cond ? yes : no` |
+| Increment | `++x` `x++` `--x` `x--` |
+| String | `"a" "b"` (concatenate) |
+| Array | `key in arr` |
 
 
 ---
@@ -1911,6 +1985,5 @@ END {
 [↑ Back to Arrays Navigation](#arrays-quick-navigation)
 
 ---
-
 
 
