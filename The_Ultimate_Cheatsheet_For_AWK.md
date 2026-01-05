@@ -666,3 +666,666 @@ NF = 3      # truncate to 3 fields
 | - | String Concatenation Operator | `"hello" "world"` (space between) |
 | - | Array Membership Operator | `(key in array)` |
 | - | Regular Expression Operators | `~` (match) `!~` (not match) |
+
+
+---
+
+## Regular Expressions
+
+---
+
+## Regex Quick Navigation
+
+| # | Section | Description |
+|---|---------|-------------|
+| 1 | [Anchors](#anchors) | `^` `$` start/end of string |
+| 2 | [Quantifiers](#quantifiers) | `*` `+` `?` `{n}` repetition |
+| 3 | [Character Classes](#character-classes) | `[abc]` `[^abc]` `[a-z]` |
+| 4 | [POSIX Character Classes](#posix-character-classes) | `[[:digit:]]` `[[:alpha:]]` etc. |
+| 5 | [Dot (Any Character)](#dot-any-character) | `.` matches any char |
+| 6 | [Alternation (OR)](#alternation-or) | `\|` match this or that |
+| 7 | [Grouping](#grouping) | `()` group patterns |
+| 8 | [Escape Sequences](#escape-sequences) | `\t` `\n` `\\` |
+| 9 | [Escaping Special Characters](#escaping-special-characters) | `\.` `\$` `\*` |
+| 10 | [Negation](#negation) | `[^...]` `!~` |
+| 11 | [Word Boundaries (gawk)](#word-boundaries-gawk) | `\<` `\>` `\y` |
+| 12 | [Case Sensitivity](#case-sensitivity) | `IGNORECASE` |
+| 13 | [Greedy Matching](#greedy-matching) | Longest match behavior |
+| 14 | [Dynamic Regex](#dynamic-regex) | Patterns from variables |
+| 15 | [Regex Operators](#regex-operators) | `~` `!~` comparison |
+| 16 | [Regex Functions](#regex-functions) | `sub` `gsub` `match` `split` |
+| 17 | [gensub() (gawk)](#gensub-gawk-only) | Advanced replacement |
+| 18 | [patsplit() (gawk)](#patsplit-gawk-only) | Split by pattern |
+| 19 | [Common Patterns](#common-real-world-patterns) | Email, IP, phone, etc. |
+
+---
+
+## Anchors
+
+```awk
+# ^ = start of string
+# $ = end of string
+
+# Field value: "hello world"
+/^hello/    ✓  # Matches: starts with "hello"
+/^world/    ✗  # NO match: doesn't start with "world"
+/world$/    ✓  # Matches: ends with "world"
+/hello$/    ✗  # NO match: doesn't end with "hello"
+/^hello$/   ✗  # NO match: not EXACTLY "hello"
+
+# Field value: "hello"
+/^hello$/   ✓  # Matches: exactly "hello", nothing else
+```
+
+| Pattern | Meaning |
+|---------|---------|
+| `^abc` | Starts with "abc" |
+| `abc$` | Ends with "abc" |
+| `^abc$` | Exactly "abc" |
+| `^$` | Empty string |
+| `^.+$` | Non-empty string |
+
+---
+
+## Quantifiers
+
+```awk
+# * = zero or more
+# + = one or more
+# ? = zero or one (optional)
+# {n} = exactly n times
+# {n,} = n or more times
+# {n,m} = between n and m times
+
+# Field value: "ac"
+/ab*c/      ✓  # Matches: zero b's is OK
+/ab+c/      ✗  # NO match: needs at least one b
+/ab?c/      ✓  # Matches: zero or one b
+
+# Field value: "abc"
+/ab*c/      ✓  # Matches: one b
+/ab+c/      ✓  # Matches: one b
+/ab?c/      ✓  # Matches: one b
+
+# Field value: "abbc"
+/ab*c/      ✓  # Matches: two b's
+/ab+c/      ✓  # Matches: two b's
+/ab?c/      ✗  # NO match: more than one b
+
+# Field value: "abbbc"
+/ab{3}c/    ✓  # Matches: exactly 3 b's
+/ab{2}c/    ✗  # NO match: has 3 b's, not 2
+/ab{2,}c/   ✓  # Matches: 2 or more b's
+/ab{2,4}c/  ✓  # Matches: between 2 and 4 b's
+
+# Field value: "abbbbbbc"
+/ab{2,4}c/  ✗  # NO match: has 6 b's (more than 4)
+```
+
+| Quantifier | Meaning | Example |
+|------------|---------|---------|
+| `*` | Zero or more | `ab*c` → ac, abc, abbc |
+| `+` | One or more | `ab+c` → abc, abbc |
+| `?` | Zero or one | `ab?c` → ac, abc |
+| `{3}` | Exactly 3 | `ab{3}c` → abbbc |
+| `{2,}` | 2 or more | `ab{2,}c` → abbc, abbbc... |
+| `{2,4}` | 2 to 4 | `ab{2,4}c` → abbc, abbbc, abbbbc |
+
+---
+
+## Character Classes
+
+```awk
+# [abc] = any one character in the set
+# [^abc] = any one character NOT in the set
+# [a-z] = any character in the range
+
+# Field value: "cat"
+/[cb]at/    ✓  # Matches: 'c' is in the set [cb]
+/[xy]at/    ✗  # NO match: 'c' is not in [xy]
+/[a-m]at/   ✓  # Matches: 'c' is in range a-m
+/[n-z]at/   ✗  # NO match: 'c' is not in range n-z
+
+# Field value: "bat"
+/[^cb]at/   ✗  # NO match: 'b' IS in the excluded set
+/[^xy]at/   ✓  # Matches: 'b' is NOT in [xy]
+
+# Field value: "test123"
+/[0-9]/     ✓  # Matches: contains digits
+/^[a-z]+$/  ✗  # NO match: has digits
+/^[a-z0-9]+$/ ✓  # Matches: only letters and digits
+
+# Field value: "Test"
+/[a-z]/     ✓  # Matches: has lowercase letters
+/^[a-z]+$/  ✗  # NO match: has uppercase 'T'
+/[A-Z]/     ✓  # Matches: has uppercase letter
+```
+
+| Pattern | Meaning |
+|---------|---------|
+| `[abc]` | a, b, or c |
+| `[^abc]` | NOT a, b, or c |
+| `[a-z]` | Lowercase letter |
+| `[A-Z]` | Uppercase letter |
+| `[0-9]` | Digit |
+| `[a-zA-Z]` | Any letter |
+| `[a-zA-Z0-9]` | Alphanumeric |
+
+---
+
+## POSIX Character Classes
+
+```awk
+# Field value: "Hello123"
+/[[:digit:]]/     ✓  # Matches: contains digits
+/[[:alpha:]]/     ✓  # Matches: contains letters
+/^[[:alnum:]]+$/  ✓  # Matches: only letters and numbers
+/^[[:lower:]]+$/  ✗  # NO match: has uppercase 'H'
+
+# Field value: "hello world"
+/[[:space:]]/     ✓  # Matches: contains space
+/^[[:lower:]]+$/  ✗  # NO match: has a space
+
+# Field value: "Hello, World!"
+/[[:punct:]]/     ✓  # Matches: has comma and exclamation
+
+# Field value: "abc123"
+/^[[:xdigit:]]+$/ ✓  # Matches: all valid hex chars
+```
+
+| Class | Equivalent | Description |
+|-------|------------|-------------|
+| `[[:digit:]]` | `[0-9]` | Digits |
+| `[[:alpha:]]` | `[a-zA-Z]` | Letters |
+| `[[:alnum:]]` | `[a-zA-Z0-9]` | Letters and digits |
+| `[[:space:]]` | `[ \t\n\r\f\v]` | All whitespace |
+| `[[:blank:]]` | `[ \t]` | Space and tab only |
+| `[[:upper:]]` | `[A-Z]` | Uppercase letters |
+| `[[:lower:]]` | `[a-z]` | Lowercase letters |
+| `[[:punct:]]` | | Punctuation |
+| `[[:print:]]` | | Printable (with space) |
+| `[[:graph:]]` | | Visible (no space) |
+| `[[:cntrl:]]` | | Control characters |
+| `[[:xdigit:]]` | `[0-9A-Fa-f]` | Hex digits |
+
+---
+
+## Dot (Any Character)
+
+```awk
+# . = any single character (except newline)
+
+# Field value: "cat"
+/c.t/       ✓  # Matches: 'a' is any character
+/c..t/      ✗  # NO match: only one char between c and t
+
+# Field value: "c@t"
+/c.t/       ✓  # Matches: '@' is any character
+
+# Field value: "ct"
+/c.t/       ✗  # NO match: needs exactly one char between
+
+# Field value: "cat in hat"
+/c.t/       ✓  # Matches: finds "cat"
+/.at/       ✓  # Matches: 'c' or 'h' before "at"
+```
+
+| Pattern | Meaning |
+|---------|---------|
+| `.` | Any single character |
+| `.*` | Any number of any characters |
+| `.+` | One or more of any character |
+| `.?` | Zero or one of any character |
+
+---
+
+## Alternation (OR)
+
+```awk
+# | = OR (match this OR that)
+# Note: use \| in some awk versions, | in gawk
+
+# Field value: "cat"
+/(cat|dog)/    ✓  # Matches: is "cat"
+/(dog|bird)/   ✗  # NO match: not "dog" or "bird"
+
+# Field value: "I have a cat"
+/(cat|dog)/    ✓  # Matches: contains "cat"
+
+# Field value: "error"
+/(error|warning|info)/ ✓  # Matches: is "error"
+
+# Field value: "debug"
+/(error|warning|info)/ ✗  # NO match: not in the list
+```
+
+---
+
+## Grouping
+
+```awk
+# () = group patterns together
+
+# Field value: "ababab"
+/(ab)+/     ✓  # Matches: "ab" repeated
+/(ab){3}/   ✓  # Matches: "ab" exactly 3 times
+/(ab){4}/   ✗  # NO match: only 3 repetitions
+
+# Field value: "abcabc"
+/(abc)+/    ✓  # Matches: "abc" repeated
+
+# Field value: "catdog"
+/(cat|dog)+/ ✓  # Matches: contains "cat" or "dog"
+```
+
+---
+
+## Escape Sequences
+
+```awk
+# Special escape sequences in regex
+\t      # Tab
+\n      # Newline
+\r      # Carriage return
+\b      # Backspace
+\f      # Form feed
+\\      # Literal backslash
+
+# Field value: "hello	world" (tab between)
+/\t/        ✓  # Matches: contains tab
+
+# Field value: "path\\to\\file"
+/\\/        ✓  # Matches: contains backslash
+```
+
+| Escape | Meaning |
+|--------|---------|
+| `\t` | Tab |
+| `\n` | Newline |
+| `\r` | Carriage return |
+| `\b` | Backspace |
+| `\f` | Form feed |
+| `\\` | Literal backslash |
+
+---
+
+## Escaping Special Characters
+
+```awk
+# Use \ to match literal special characters
+# Special chars: . * + ? [ ] ( ) { } ^ $ | \
+
+# Field value: "test.txt"
+/\./        ✓  # Matches: literal dot
+/\.txt$/    ✓  # Matches: ends with ".txt"
+
+# Field value: "price: $50"
+/\$/        ✓  # Matches: literal dollar sign
+
+# Field value: "2+2=4"
+/\+/        ✓  # Matches: literal plus sign
+/+/         ✗  # ERROR: + needs something before it
+
+# Field value: "question?"
+/\?/        ✓  # Matches: literal question mark
+
+# Field value: "array[5]"
+/\[/        ✓  # Matches: literal [
+/\[5\]/     ✓  # Matches: literal [5]
+```
+
+| Character | Escaped |
+|-----------|---------|
+| `.` | `\.` |
+| `*` | `\*` |
+| `+` | `\+` |
+| `?` | `\?` |
+| `[` | `\[` |
+| `]` | `\]` |
+| `(` | `\(` |
+| `)` | `\)` |
+| `{` | `\{` |
+| `}` | `\}` |
+| `^` | `\^` |
+| `$` | `\$` |
+| `\|` | `\\\|` |
+| `\` | `\\` |
+
+---
+
+## Negation
+
+```awk
+# [^...] = NOT any of these characters
+# !~ = does NOT match
+
+# Field value: "hello"
+/[^0-9]/    ✓  # Matches: has non-digit characters
+/^[^0-9]+$/ ✓  # Matches: entire field has no digits
+
+# Field value: "hello123"
+/^[^0-9]+$/ ✗  # NO match: has digits
+
+# Using !~ operator:
+$1 !~ /[0-9]/  # True if field 1 does NOT contain digits
+```
+
+---
+
+## Word Boundaries (gawk)
+
+```awk
+# \< = start of word
+# \> = end of word
+# \y = word boundary (either side)
+
+# Field value: "the cat in the hat"
+/\<cat\>/   ✓  # Matches: "cat" as whole word
+/\<hat\>/   ✓  # Matches: "hat" as whole word
+/\<ca\>/    ✗  # NO match: "ca" is not a whole word
+
+# Field value: "category"
+/\<cat\>/   ✗  # NO match: "cat" is part of word
+/cat/       ✓  # Matches: "cat" substring exists
+```
+
+| Boundary | Meaning |
+|----------|---------|
+| `\<` | Start of word |
+| `\>` | End of word |
+| `\y` | Either boundary |
+| `\<word\>` | Whole word only |
+
+---
+
+## Case Sensitivity
+
+```awk
+# Default: case sensitive
+# Set IGNORECASE=1 for case insensitive
+
+# Field value: "Hello"
+/hello/     ✗  # NO match: case sensitive
+/Hello/     ✓  # Matches: exact case
+
+# With IGNORECASE=1:
+BEGIN { IGNORECASE=1 }
+/hello/     ✓  # Matches: case insensitive
+/HELLO/     ✓  # Matches: case insensitive
+
+# Or use character classes:
+/[Hh]ello/  ✓  # Matches: "Hello" or "hello"
+```
+
+---
+
+## Greedy Matching
+
+```awk
+# AWK regex is ALWAYS greedy (matches longest possible)
+# No non-greedy quantifiers like *? or +?
+
+# Field value: "<b>bold</b> and <i>italic</i>"
+match($0, /<.*>/)
+# Matches: "<b>bold</b> and <i>italic</i>" (entire string!)
+# NOT just "<b>"
+
+# Workaround: use negated character class
+match($0, /<[^>]*>/)
+# Matches: "<b>" (first tag only)
+
+# Field value: "aaaaab"
+/a+/        # Matches: "aaaaa" (all a's, greedy)
+```
+
+| Greedy | Non-greedy Workaround |
+|--------|----------------------|
+| `.*` | `[^X]*` (stop at X) |
+| `.+` | `[^X]+` (stop at X) |
+| `<.*>` | `<[^>]*>` |
+| `".*"` | `"[^"]*"` |
+
+---
+
+## Dynamic Regex
+
+```awk
+# Static regex (literal)
+/error/ { print }
+
+# Dynamic regex (from variable)
+BEGIN { pattern = "error" }
+$0 ~ pattern { print }
+
+# Dynamic regex from field
+$1 ~ $2 { print "Field 1 matches pattern in field 2" }
+
+# Building regex dynamically
+BEGIN { ext = "txt" }
+$0 ~ ("\\." ext "$") { print "Text file:", $0 }
+```
+
+---
+
+## Regex Operators
+
+```awk
+# Comparison operators
+$0 ~ /regex/     # Line matches regex
+$0 !~ /regex/    # Line does NOT match regex
+$1 ~ /regex/     # Field 1 matches regex
+
+# In conditions
+if ($0 ~ /error/) print "found"
+
+# Pattern-action
+/regex/ { action }           # Implicit: $0 ~ /regex/
+$2 ~ /regex/ { action }      # Explicit field match
+```
+
+| Operator | Meaning |
+|----------|---------|
+| `~` | Matches |
+| `!~` | Does not match |
+| `/regex/` | Shorthand for `$0 ~ /regex/` |
+
+---
+
+## Regex Functions
+
+```awk
+# sub(regex, replacement, [target])
+# Replace first match (modifies in place)
+# Returns: number of replacements (0 or 1)
+
+# Field value: "hello world"
+sub(/world/, "AWK")      # Result: "hello AWK"
+sub(/o/, "0")            # Result: "hell0 world"
+sub(/o/, "0", $2)        # Replace in field 2 only
+
+# gsub(regex, replacement, [target])
+# Replace ALL matches (modifies in place)
+# Returns: number of replacements
+
+# Field value: "hello world"
+gsub(/o/, "0")           # Result: "hell0 w0rld", returns 2
+gsub(/[aeiou]/, "*")     # Result: "h*ll* w*rld"
+
+# match(string, regex)
+# Find position of match
+# Sets RSTART and RLENGTH
+
+# Field value: "hello world"
+match($0, /world/)       # Returns: 7, RSTART=7, RLENGTH=5
+match($0, /xyz/)         # Returns: 0 (not found)
+
+# Extract matched text
+if (match($0, /[0-9]+/)) {
+    print substr($0, RSTART, RLENGTH)
+}
+
+# split(string, array, regex)
+# Split string into array by regex
+
+# Field value: "a:b::c"
+n = split($0, arr, /:+/) # Split on one or more colons
+                         # arr[1]="a", arr[2]="b", arr[3]="c"
+                         # n=3
+```
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `sub(r,s)` | Replace first match | 0 or 1 |
+| `gsub(r,s)` | Replace all matches | Count |
+| `match(str,r)` | Find position | Position (0 if none) |
+| `split(str,arr,r)` | Split by regex | Number of elements |
+
+---
+
+## gensub() (gawk Only)
+
+```awk
+# Syntax: gensub(regex, replacement, how, [target])
+# Returns new string (doesn't modify original)
+# Supports backreferences: \1 \2 etc.
+
+# Field value: "hello world"
+gensub(/world/, "AWK", "g")        # "hello AWK"
+gensub(/o/, "0", 1)                # "hell0 world" (first only)
+gensub(/o/, "0", 2)                # "hello w0rld" (second only)
+gensub(/o/, "0", "g")              # "hell0 w0rld" (all)
+
+# Backreferences
+# Field value: "hello world"
+gensub(/(\w+) (\w+)/, "\\2 \\1", "g")  # "world hello"
+
+# Field value: "2024-01-15"
+gensub(/([0-9]+)-([0-9]+)-([0-9]+)/, "\\2/\\3/\\1", "g")
+# Result: "01/15/2024"
+
+# Field value: "John Smith"
+gensub(/(.+) (.+)/, "Last: \\2, First: \\1", 1)
+# Result: "Last: Smith, First: John"
+```
+
+| Parameter | Meaning |
+|-----------|---------|
+| `"g"` | Replace all |
+| `1` | Replace first |
+| `2` | Replace second |
+| `n` | Replace nth |
+| `\\1` | First capture group |
+| `\\2` | Second capture group |
+
+---
+
+## patsplit() (gawk Only)
+
+```awk
+# Syntax: patsplit(string, array, pattern [, separators])
+# Split by pattern matches (extract matches)
+
+# Field value: "abc123def456ghi"
+n = patsplit($0, nums, /[0-9]+/)
+# nums[1]="123", nums[2]="456", n=2
+
+# Extract all words
+n = patsplit($0, words, /[a-z]+/)
+# words[1]="abc", words[2]="def", words[3]="ghi"
+
+# Extract all email addresses
+patsplit($0, emails, /[^[:space:]]+@[^[:space:]]+/)
+```
+
+---
+
+## Common Real-World Patterns
+
+```awk
+# Email (simplified)
+/^[^@]+@[^@]+\.[a-z]+$/
+
+# IP Address
+/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/
+
+# Phone XXX-XXX-XXXX
+/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/
+
+# Date YYYY-MM-DD
+/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/
+
+# URL
+/^https?:\/\//
+
+# Blank line
+/^[[:space:]]*$/
+
+# Non-blank line
+/[^[:space:]]/
+
+# Starts with # (comment)
+/^[[:space:]]*#/
+
+# Numeric (integer)
+/^-?[0-9]+$/
+
+# Numeric (decimal)
+/^-?[0-9]*\.?[0-9]+$/
+
+# Hex number
+/^0x[0-9A-Fa-f]+$/
+
+# MAC address
+/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/
+```
+
+| Pattern | Validates |
+|---------|-----------|
+| `/^[^@]+@[^@]+\.[a-z]+$/` | Email |
+| `/^[0-9]{1,3}(\.[0-9]{1,3}){3}$/` | IP address |
+| `/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/` | Phone |
+| `/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/` | Date YYYY-MM-DD |
+| `/^https?:\/\//` | URL |
+| `/^-?[0-9]+$/` | Integer |
+| `/^-?[0-9]*\.?[0-9]+$/` | Decimal |
+| `/^[[:space:]]*$/` | Blank line |
+| `/^#/` | Comment line |
+
+---
+
+## Complete Example Script
+
+```awk
+#!/usr/bin/awk -f
+BEGIN { FS="," }
+
+# Only numeric IDs
+$1 ~ /^[0-9]+$/ { print "Valid ID:", $1 }
+
+# Valid email in column 3
+$3 ~ /^[^@]+@[^@]+\.[a-z]+$/ { print "Email:", $3 }
+
+# Lines NOT starting with # or empty
+!/^#/ && !/^$/ { print }
+
+# Phone numbers in XXX-XXX-XXXX format
+$2 ~ /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/ { print "Phone:", $2 }
+
+# Find errors or warnings (case insensitive)
+BEGIN { IGNORECASE=1 }
+/(error|warning)/ { print "Alert:", $0 }
+
+# Extract numbers
+match($0, /[0-9]+/) { print "Found number at position:", RSTART }
+
+# Replace all vowels with *
+{ gsub(/[aeiou]/, "*"); print }
+```
+
+---
+
+[↑ Back to Regex Navigation](#regex-quick-navigation)
+
+---
+
+
