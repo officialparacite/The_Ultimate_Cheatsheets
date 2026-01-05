@@ -21,7 +21,7 @@
 | - | [GNU AWK Only](#gnu-awk-gawk-only) | [QR](#quick-reference-gawk) |
 | - | [Operators](#operators) | [QR](#quick-reference-operators) |
 | - | [Regular Expressions](#regular-expressions) | [QR](#regex-quick-reference) |
-| - | [Arrays](#arrays) | [QR](#quick-reference-arrays) |
+| - | [Arrays](#arrays) | [QR](#arrays-quick-reference) |
 
 
 ---
