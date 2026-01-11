@@ -1320,6 +1320,9 @@ patsplit($0, emails, /[^[:space:]]+@[^[:space:]]+/)
 ## Common Real-World Patterns
 
 ```awk
+# Match exact word in a row
+$0 ~ /(^|[^[:alnum:]_])male([^[:alnum:]_]|$)/
+
 # Email (simplified)
 /^[^@]+@[^@]+\.[a-z]+$/
 
