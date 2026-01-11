@@ -221,9 +221,9 @@ BEGIN { FS = "," }
 
 /error/ { print "Found error:", $0 }   # pattern + action
 
-{ count++ }                             # action only (every line)
+{ count++ }                            # action only (every line)
 
-$3 > 100 { print "Large value:", $3 }  # pattern + action
+$3 > 100, /END/ { print }              # pattern + action
 
 END { print "Total lines:", count }
 ```
