@@ -222,3 +222,29 @@ stocks:amazon
 5. **Start broad, then narrow** your search with additional operators
 
 ---
+
+## Useful Bookmarklets
+
+### DuckDuckGo → Google
+
+```javascript
+javascript:(function(){
+  const q = new URLSearchParams(location.search).get('q');
+  if (!q) { alert('No search query found'); return; }
+  location.href = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+})();
+```
+
+---
+
+### Google → DuckDuckGo
+
+```javascript
+javascript:(function(){
+  const q = new URLSearchParams(location.search).get('q');
+  if (!q) { alert('No search query found'); return; }
+  location.href = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+})();
+```
+
+---
