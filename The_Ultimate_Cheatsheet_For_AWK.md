@@ -157,6 +157,7 @@ awk -F':' -v threshold=100 '$3 > threshold {print $1}' data.txt
 |--------|-----------|-------------|
 | `-b` | `--characters-as-bytes` | Treat characters as bytes |
 | `-c` | `--traditional` | Disable gawk extensions |
+| `-k` | `--csv` | Enable CSV special processing |
 | `-d[file]` | `--dump-variables[=file]` | Dump variables to file (default: `awkvars.out`) |
 | `-e 'text'` | `--source='text'` | Specify program text |
 | `-E file` | `--exec=file` | Like `-f` but last option processed |
