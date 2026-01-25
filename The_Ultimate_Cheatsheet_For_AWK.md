@@ -430,32 +430,33 @@ BEGIN { FS = ","; OFS = "\t" }
 ```
 
 ```awk
-# Parse records separated by blank lines
-BEGIN { RS = ""; FS = "\n" }
-{ print "Record:", NR, "First line:", $1 }
+# Example
+#!/bin/awk -f
 
-# Input:
-# name: alice
-# age: 30
-#
-# name: bob
-# age: 25
-```
+BEGIN{
+  RS = " "
+  FS = ""
+  OFS = ""
+  ORS = " "
+}
 
-```awk
-# Output each record on separate lines with dashes
-BEGIN { ORS = "\n---\n" }
-{ print $0 }
+/Hello/{
+  print $2, $5
+}
 
-# Input:
-# line1
-# line2
+/Friend/{
+  print $3, $1
+}
 
-# Output:
-# line1
-# ---
-# line2
-# ---
+/24/{
+  print $1
+}
+
+END{
+}
+
+# Input: Hello Friend 24
+# Output: eo iF 2
 ```
 
 ### Number Formatting
