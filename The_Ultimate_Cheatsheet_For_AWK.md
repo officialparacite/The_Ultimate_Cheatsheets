@@ -460,9 +460,13 @@ END{
 ```
 
 > [!Note]
+>
 > Important distinction (this trips people up)
+>
 > print $1 $2 → no separator, concatenation
+>
 > print $1, $2 → uses OFS
+
 
 ### Number Formatting
 
