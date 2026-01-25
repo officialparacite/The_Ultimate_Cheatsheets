@@ -459,10 +459,10 @@ END{
 # Output: eo iF 2
 ```
 
->[!Note]
->Important distinction (this trips people up)
->print $1 $2 → no separator, concatenation
->print $1, $2 → uses OFS
+> [!Note]
+> Important distinction (this trips people up)
+> print $1 $2 → no separator, concatenation
+> print $1, $2 → uses OFS
 
 ### Number Formatting
 
