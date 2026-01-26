@@ -578,6 +578,9 @@ NR          # line number (total)
 FNR         # line number (current file)
 NF          # number of fields
 ```
+> [!Note]
+>
+> $ operator means “treat this as a field reference”, not a normal variable.
 
 ---
 
