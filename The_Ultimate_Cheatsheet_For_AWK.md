@@ -1890,30 +1890,65 @@ BEGIN {
 
 ## SUBSEP
 
+`SUBSEP` is AWK's **subscript separator** - it's used for simulating multidimensional arrays.
+
+## What it does
+
+When you use multiple subscripts in an AWK array, AWK internally concatenates them into a single string key, separated by `SUBSEP`:
+
 ```awk
-# SUBSEP = subscript separator for multi-dimensional arrays
-# Default value: "\034" (non-printing character)
+arr[1, 2] = "value"
+# Internally stored as: arr["1" SUBSEP "2"] = "value"
+```
 
+## Default value
+
+By default, `SUBSEP` is `"\034"` (ASCII character 034, a non-printable character).
+
+## Example
+
+```awk
 BEGIN {
-    # Default behavior
-    arr[1,2] = "value"
-
-    for (key in arr) {
-        print key           # prints "1\0342" (not readable)
-    }
+    # Create a "2D array"
+    arr[1, 1] = "a"
+    arr[1, 2] = "b"
+    arr[2, 1] = "c"
+    arr[2, 2] = "d"
+    
+    # Iterate - note the combined key
+    for (key in arr)
+        print "key:", key, "value:", arr[key]
 }
+```
 
-# Custom SUBSEP for readable keys
+Output (the actual separator won't be visible since it's non-printable):
+```
+key: 11 value: a
+key: 12 value: b
+...
+```
+
+## Changing SUBSEP
+
+You can change it to something more readable:
+
+```awk
 BEGIN {
-    SUBSEP = ":"
-
-    arr[1,2] = "value"
-    arr["x","y"] = "coord"
-
-    for (key in arr) {
-        print key           # prints "1:2" and "x:y"
-    }
+    SUBSEP = ","
+    arr[1, 2] = "value"
+    
+    for (key in arr)
+        print key  # Prints: 1,2
 }
+```
+
+## Testing membership
+
+Use `(i, j) in arr` to test if a key exists:
+
+```awk
+if ((1, 2) in arr)
+    print "exists"
 ```
 
 ### Splitting Multi-Index Keys
