@@ -1718,17 +1718,6 @@ BEGIN {
 }
 ```
 
-```awk
-# Delete elements matching condition
-{
-    for (key in arr) {
-        if (arr[key] < 10) {
-            delete arr[key]
-        }
-    }
-}
-```
-
 ---
 
 ## Checking Array Membership
