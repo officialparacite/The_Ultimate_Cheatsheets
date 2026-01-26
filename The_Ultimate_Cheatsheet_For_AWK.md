@@ -1951,27 +1951,6 @@ if ((1, 2) in arr)
     print "exists"
 ```
 
-### Splitting Multi-Index Keys
-
-```awk
-BEGIN {
-    SUBSEP = ":"
-    arr[1,2] = 100
-    arr[3,4] = 200
-
-    for (key in arr) {
-        split(key, indices, SUBSEP)
-        row = indices[1]
-        col = indices[2]
-        print "arr[" row "," col "] =", arr[key]
-    }
-}
-
-# Output:
-# arr[1,2] = 100
-# arr[3,4] = 200
-```
-
 ---
 
 ## Array Functions (gawk)
