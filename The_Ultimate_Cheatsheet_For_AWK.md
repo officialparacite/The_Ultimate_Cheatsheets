@@ -26,6 +26,7 @@
 | - | [Built-in Functions](#built-in-functions) | [QR](#built-in-functions-quick-reference) |
 | - | [User-Defined Functions](#user-defined-functions) | [QR](#user-defined-functions-quick-reference) |
 | - | [Output Redirection](#output-redirection) | [QR](#output-redirection-quick-reference) |
+| - | [Running Shell Commands](#running-shell-commands) | - |
 
 
 
@@ -4242,8 +4243,118 @@ END {
 
 ---
 
-[↑ Back to Index](#index)
+# Running Shell Commands
+
+## Execute a command (don’t capture output)
+
+Use `system()`:
+
+```awk
+system("command")
+```
+
+Example:
+
+```awk
+system("ls -l")
+```
+
+* Runs command
+* Prints output directly to stdout
+* Returns exit status
+* Spawns a new shell (slow if used in loops)
 
 ---
 
+## Pipe output to a command
 
+Command must be a **string**:
+
+```awk
+print data | "command"
+close("command")
+```
+
+Example:
+
+```awk
+print $3 | "tr ')' ' '"
+close("tr ')' ' '")
+```
+
+* Awk handles the pipe (not bash)
+* Always `close()` after using it
+* Spawns a shell process
+
+---
+
+## Capture command output into a variable
+
+Use `getline` with a pipe:
+
+```awk
+cmd = "command"
+cmd | getline var
+close(cmd)
+```
+
+Example:
+
+```awk
+cmd = "date"
+cmd | getline result
+close(cmd)
+print result
+```
+
+---
+
+### Reading multiple lines from command
+
+```awk
+cmd = "ls"
+while ((cmd | getline line) > 0) {
+    print line
+}
+close(cmd)
+```
+
+Return values of `getline`:
+
+* `1` → success
+* `0` → EOF
+* `-1` → error
+
+---
+
+# Important Rules
+
+### Commands must be strings
+
+Correct:
+
+```awk
+print $1 | "sort"
+```
+
+Wrong:
+
+```awk
+print $1 | sort
+```
+
+---
+
+### Always close command pipes
+
+```awk
+close(cmd)
+```
+
+Prevents file descriptor leaks.
+
+---
+
+[↑ Back to Index](#index)
+
+---
