@@ -171,8 +171,6 @@ parts = "a:b:c".split(":", 1)       # ['a', 'b:c'] (max 1 split)
 
 text = " ".join(words)              # 'hello world'
 text = ", ".join(["a", "b", "c"])   # 'a, b, c'
-
-lines = "a\nb\nc".splitlines()      # ['a', 'b', 'c']
 ```
 
 ### Concatenation & Formatting
@@ -183,8 +181,6 @@ lines = "a\nb\nc".splitlines()      # ['a', 'b', 'c']
 
 name = "Tam"
 f"Hello {name}"                     # f-string (Python 3.6+)
-"Hello {}".format(name)             # format method
-"Hello %s" % name                   # % formatting (old style)
 ```
 
 ---
