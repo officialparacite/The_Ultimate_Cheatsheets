@@ -241,18 +241,6 @@ arr.count("one")                    # count occurrences
 "one" in arr                        # True (membership check)
 ```
 
-### Other Operations
-
-```python
-new_arr = arr + ["four", "five"]    # concatenate
-arr_copy = arr.copy()               # shallow copy
-arr_copy = arr[:]                   # shallow copy (slicing)
-
-min([1, 2, 3])                      # 1
-max([1, 2, 3])                      # 3
-sum([1, 2, 3])                      # 6
-```
-
 ---
 
 ## Dictionaries
