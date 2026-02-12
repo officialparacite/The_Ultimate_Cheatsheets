@@ -253,14 +253,6 @@ max([1, 2, 3])                      # 3
 sum([1, 2, 3])                      # 6
 ```
 
-### List Comprehension
-
-```python
-squares = [x**2 for x in range(5)]              # [0, 1, 4, 9, 16]
-evens = [x for x in range(10) if x % 2 == 0]    # [0, 2, 4, 6, 8]
-matrix = [[i*j for j in range(3)] for i in range(3)]
-```
-
 ---
 
 ## Dictionaries
