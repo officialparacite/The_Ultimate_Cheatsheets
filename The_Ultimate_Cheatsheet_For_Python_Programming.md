@@ -219,7 +219,7 @@ arr += ["seven"]                    # concatenate
 arr.remove("two")                   # remove by value (first occurrence)
 arr.pop()                           # remove and return last
 arr.pop(1)                          # remove and return at index
-del arr[0]                          # delete by index
+del arr[1:4]                        # remove slice
 arr.clear()                         # remove all elements
 ```
 
