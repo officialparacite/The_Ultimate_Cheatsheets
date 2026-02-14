@@ -297,13 +297,6 @@ for key, value in my_dict.items():
 "five" not in my_dict               # True
 ```
 
-### Dictionary Comprehension
-
-```python
-squares = {x: x**2 for x in range(5)}           # {0: 0, 1: 1, 2: 4, ...}
-filtered = {k: v for k, v in my_dict.items() if v > 1}
-```
-
 ---
 
 ## Tuples
@@ -391,12 +384,6 @@ a.isdisjoint(b)                     # no common elements?
 ```python
 3 in a                              # True
 5 not in a                          # True
-```
-
-### Set Comprehension
-
-```python
-squares = {x**2 for x in range(5)}  # {0, 1, 4, 9, 16}
 ```
 
 ---
