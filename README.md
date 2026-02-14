@@ -7,3 +7,4 @@
 - Playwright (work in progress)
 - Web Search Essentials
 - JavaScript
+- JavaScript (Browser)
