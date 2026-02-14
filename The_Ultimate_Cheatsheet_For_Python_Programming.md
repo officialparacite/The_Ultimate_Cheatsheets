@@ -504,20 +504,6 @@ if value is not None:
     print("Has value")
 ```
 
-### Ternary Operator
-
-```python
-result = "Yes" if condition else "No"
-value = x if x > 0 else 0
-```
-
-### Comparison Chaining
-
-```python
-if 0 < x < 10:                      # equivalent to: x > 0 and x < 10
-    print("Single digit")
-```
-
 ---
 
 ## For Loops
