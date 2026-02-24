@@ -21,7 +21,6 @@
 | - | [Abstraction](#abstraction) |
 | - | [Inheritance](#inheritance) |
 | - | [Polymorphism](#polymorphism) |
-| - | [Class & Static Methods](#class--static-methods) |
 | - | [Properties](#properties) |
 | - | [Class & Static Methods](#class-&-static-methods) |
 
