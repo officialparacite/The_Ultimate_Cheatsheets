@@ -8,6 +8,7 @@
 
 ---
 
+
 | * | Table of Contents |
 |---|-------------------|
 | - | [Classes](#classes) |
@@ -16,13 +17,13 @@
 | - | [Instance Methods](#instance-methods) |
 | - | [Class vs Instance Attributes](#class-Attributes-vs-instance-attributes) |
 | - | [Functions vs Methods](#functions-vs-methods) |
-| - | [Inheritance](#inheritance) |
-| - | [Properties](#properties) |
 | - | [Encapsulation](#encapsulation) |
 | - | [Abstraction](#abstraction) |
-| - | [Polymorphism](#polymorphism) |
 | - | [Inheritance](#inheritance) |
+| - | [Polymorphism](#polymorphism) |
 | - | [Class & Static Methods](#class--static-methods) |
+| - | [Properties](#properties) |
+| - | [Class & Static Methods](#class-&-static-methods) |
 
 
 ---
