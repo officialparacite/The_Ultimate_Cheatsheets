@@ -640,6 +640,29 @@ The same idea extends to other operators too. Each one maps to a dunder method t
 
 The reason this falls under polymorphism is the same idea as before — the `+` operator means something different depending on what objects are involved. `3 + 4` gives you `7`, `"three " + "four"` gives you `"three four"`, and now `p1 + p2` gives you a new `Point`. Same operator, many forms.
 
+> [!Note]
+> **Return a value from dunder methods to support chaining**
+>
+> Since `p1 + p2` evaluates to a new `Point`, you can chain it immediately: `p1 + p2 + p3`. This works because `__add__` returns a new `Point`, so `(p1 + p2) + p3` has a valid object to work with at each step.
+>
+> If `__add__` returned `None` instead, `p1 + p2` would evaluate to `None`, and `None + p3` would fail with a `TypeError`.
+>
+> ```python
+> def __add__(self, other):
+>     x = self.x + other.x
+>     y = self.y + other.y
+>     return Point(x, y)  # enables chaining: p1 + p2 + p3
+>
+> p1 = Point(4, 5)
+> p2 = Point(2, 3)
+> p3 = Point(1, 1)
+> p4 = p1 + p2 + p3
+> # p4 is (7, 9)
+> ```
+>
+> The same rule applies to any operator you overload — always return a meaningful value if you want chaining to work.
+
+---
 ---
 
 ## Properties
